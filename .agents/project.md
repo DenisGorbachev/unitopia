@@ -6,7 +6,7 @@ A Rust package that implements a generic newtype for unit-of-measurement + helpe
 
 Requirements:
 
-* Must provide a `Measure` newtype
+* Must export a [Measure newtype](#measure-newtype)
 
 Design options:
 
