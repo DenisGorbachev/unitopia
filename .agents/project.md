@@ -87,8 +87,54 @@ Notes:
 
 ## Custom unit
 
-A unit that is not a part of SI.
+A [unit](#unit) that is not a part of SI.
 
 Examples:
 
-* Enzyme unit (e.g. FIP)
+* Radian is defined as "the angle subtended at the center of a plane circle by an arc that is equal in length to the radius".
+* Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
+
+## Quantity
+
+A property of a physical object that can be quantified by measurement.
+
+Examples:
+
+* Length ([base quantity](#base-quantity))
+* Mass ([base quantity](#base-quantity))
+* Time ([base quantity](#base-quantity))
+* Speed ([derived quantity](#derived-quantity))
+* Force ([derived quantity](#derived-quantity))
+* Energy ([derived quantity](#derived-quantity))
+* Volume ([derived quantity](#derived-quantity))
+
+## Base quantity
+
+A [quantity](#quantity) that is not expressed as a multiplication of other quantities.
+
+Examples:
+
+* Length
+* Mass
+* Time
+
+## Derived quantity
+
+A [quantity](#quantity) that is be expressed as a multiplication of other quantities.
+
+Examples:
+
+* Speed
+* Force
+* Energy
+* Volume
+
+## Unit
+
+A magnitude of a quantity.
+
+Examples:
+
+* Second is a unit of time defined as "the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium-133 atom"
+* Metre is a unit of length defined as "the length of the path travelled by light in vacuum during a time interval of 1/299792458 of a second"
+* Mole is a unit of amount of substance defined as exactly 6.02214076 * 10^23.
