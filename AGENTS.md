@@ -338,7 +338,7 @@ Design options:
 
 * Add scaling
   * Tasks
-    * Add `numerator: u64`, `denominator: u64`, `power: u64`
+    * Add `numerator: i64`, `denominator: NonZeroU64`, `power: i64`
   * Evaluation
     * Notes:
       * Measure is currently #\[repr(transparent)] + serde(transparent) and Deref to Value; adding fields breaks that ABI/serde model and the ergonomic Deref behavior.
@@ -362,12 +362,12 @@ A newtype that represents a physical measurement outcome.
 Requirements:
 
 * Must support a [custom unit](#custom-unit).
-* Must support a generic storage type (e.g. `u32`, `u64`, `i32`, `i64` `f32`, `f64` or any other generic type that implements the necessary traits for arithmetic operations).
-* Must disallow adding or subtracting measures of different physical quantities.
-* Must allow multiplying or dividing measures of different physical quantities.
-  * The result must have its own distinct type.
-* Must support fractional units (e.g. millisecond).
-* Must integrate with serialization frameworks, at least the following:
+* Must support a generic storage type (e.g. `u32`, `u64`, `i32`, `i64`, `f32`, `f64` or any other generic type that implements the necessary traits for arithmetic operations).
+* Must disallow adding or subtracting measures of different units.
+* Must allow multiplying or dividing measures of different units.
+  * The result must have its own distinct unit that is a multiplication or division of input units.
+* Must support fractional values (e.g. millisecond).
+* Must integrate with serialization frameworks (feature-gated), at least the following:
   * `serde`
   * `rkyv`
   * `bitcode`
@@ -417,7 +417,6 @@ A [unit](#unit) that is not a part of SI.
 
 Examples:
 
-* Radian is defined as "the angle subtended at the center of a plane circle by an arc that is equal in length to the radius".
 * Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
 
 ### Quantity
@@ -433,6 +432,7 @@ Examples:
 * Force ([derived quantity](#derived-quantity))
 * Energy ([derived quantity](#derived-quantity))
 * Volume ([derived quantity](#derived-quantity))
+* Radian ([derived quantity](#derived-quantity))
 
 ### Base quantity
 
@@ -446,7 +446,7 @@ Examples:
 
 ### Derived quantity
 
-A [quantity](#quantity) that is be expressed as a multiplication of other quantities.
+A [quantity](#quantity) that is expressed as a multiplication of other quantities.
 
 Examples:
 
@@ -457,13 +457,20 @@ Examples:
 
 ### Unit
 
-A magnitude of a quantity.
+A magnitude of a [quantity](#quantity).
 
 Examples:
 
 * Second is a unit of time defined as "the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium-133 atom"
 * Metre is a unit of length defined as "the length of the path travelled by light in vacuum during a time interval of 1/299792458 of a second"
 * Mole is a unit of amount of substance defined as exactly 6.02214076 \* 10^23.
+
+Notes:
+
+* The units of the same [quantity](#quantity) can be converted between each other.
+  * Examples:
+    * Metre and foot.
+    * Radian and degree.
 
 ## Knowledge
 
