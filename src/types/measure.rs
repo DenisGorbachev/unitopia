@@ -210,8 +210,6 @@ impl_binop_assign_value!(MulAssign, mul_assign);
 impl_binop_assign_value!(DivAssign, div_assign);
 // TODO: impl_binop_assign_ref_value!
 
-// TODO: Implement checked, wrapping, overflowing, saturating variants as `num-traits`
-
 #[cfg(test)]
 pub mod test_templates {
     use super::*;

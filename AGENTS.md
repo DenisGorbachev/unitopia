@@ -330,6 +330,10 @@ You are running in a sandbox with limited network access.
 
 A Rust package that implements a generic newtype for unit-of-measurement + helpers.
 
+Requirements:
+
+* Must provide a `Measure` newtype
+
 Design options:
 
 * Add scaling
@@ -350,6 +354,70 @@ Design options:
       uses (numerator, denominator, power) and implements Add/Sub/Mul/Div/Zero. Then Measure\<Quantity, ScaledRational> gives you integer arithmetic,
       while existing users can still use f32/f64 or i64 as Value. If you want extreme range/precision, consider an existing crate like rust\_decimal,
       or num\_rational::Ratio with num\_bigint::BigInt.
+
+### Measure newtype
+
+A newtype that represents a physical measurement outcome.
+
+Requirements:
+
+* Must support a [custom unit](#custom-unit).
+* Must support a generic storage type (e.g. `u32`, `u64`, `i32`, `i64` `f32`, `f64` or any other generic type that implements the necessary traits for arithmetic operations).
+* Must disallow adding or subtracting measures of different physical quantities.
+* Must allow multiplying or dividing measures of different physical quantities.
+  * The result must have its own distinct type.
+* Must support fractional units (e.g. millisecond).
+* Must integrate with serialization frameworks, at least the following:
+  * `serde`
+  * `rkyv`
+  * `bitcode`
+  * `wincode`
+* Must implement checked, wrapping, overflowing, saturating arithmetic operation traits from `num-traits`
+
+Preferences:
+
+* Should integrate with existing crates that provide similar types:
+  * Examples:
+    * `time` provides types that represent nanoseconds
+    * `chrono` provides types that represent nanoseconds
+    * `core` provides `Duration` that represents nanoseconds
+  * Notes:
+    * Some crates provide types that represent measurement deltas, not just measurements
+      * Examples:
+        * `core` provides `Duration`
+    * Some types are measurements with a custom offset
+      * Examples:
+        * Timestamp is a measure of time with a custom offset (UNIX epoch)
+
+Implementation ideas:
+
+* May use `Mul` or `Div` generic types (e.g. `type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`)
+  * Notes:
+    * This makes the units which are semantically equivalent syntactically different
+      * Examples:
+        * `Mul<Kilogram, Meter>` and `Mul<Meter, Kilogram>`
+      * Solutions:
+        * Provide an `invert_unit` method for measures with `Mul` unit
+        * Switch to runtime check
+        * Represent all units in a system with a single type whose generic parameters are unit powers
+          * May use `typenum` crate
+* May use `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, Meter, 1, 1>, Mul<Second, Second, 1, 1>, 1, -1>;`)
+
+Allowances:
+
+* May not follow SI
+
+Notes:
+
+* The implementation ideas are just ideas. If you think this is a wrong idea, tell me about it and don't implement it.
+
+### Custom unit
+
+A unit that is not a part of SI.
+
+Examples:
+
+* Enzyme unit (e.g. FIP)
 
 ## Knowledge
 
