@@ -434,6 +434,11 @@ Requirements:
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
 * Must implement [scalar multiplication traits](#scalar-multiplication-trait) for values with scalars of the same storage type.
+* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit or and `B` parameter is a scalar
+  * Requirements:
+    * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of `Self` and `A` units.
+* Must implement `num_traits::MulAdd` for values where `A` and `B` parameters are scalars
+* Must implement `num_traits::MulAddAssign` for values where `A` and `B` parameters are scalars
 * Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
@@ -578,8 +583,8 @@ A magnitude of a [quantity](#quantity).
 
 Examples:
 
-* Second is a unit of time defined as "the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium-133 atom"
-* Meter is a unit of length defined as "the length of the path travelled by light in vacuum during a time interval of 1/299792458 of a second"
+* Second is a unit of time defined as "the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the cesium-133 atom"
+* Meter is a unit of length defined as "the length of the path traveled by light in vacuum during a time interval of 1/299792458 of a second"
 * Mole is a unit of amount of substance defined as exactly 6.02214076 \* 10^23.
 
 Notes:
@@ -679,15 +684,18 @@ A trait from the following list:
 * `core::ops::Mul`
 * `core::ops::Div`
 * `num_traits::Pow`
-* `num_traits::MulAdd`
 * `num_traits::CheckedMul`
 * `num_traits::CheckedDiv`
 * `num_traits::SaturatingMul`
-* `num_traits::SaturatingDiv`
 * `num_traits::WrappingMul`
-* `num_traits::WrappingDiv`
 * `num_traits::OverflowingMul`
-* `num_traits::OverflowingDiv`
+
+Notes:
+
+* The following traits don't exist because they don't make sense for division:
+  * `num_traits::SaturatingDiv`
+  * `num_traits::WrappingDiv`
+  * `num_traits::OverflowingDiv`
 
 ### Scalar multiplication trait
 
