@@ -328,7 +328,7 @@ You are running in a sandbox with limited network access.
 
 ### This document
 
-A specification for [`unitopia`](#unitopia)
+A specification for [`unitopia`](#unitopia).
 
 Notes:
 
@@ -368,13 +368,29 @@ Requirements:
 
 ### `unitopia-marker-units`
 
-A [`unitopia`](#unitopia) member package that exports physical units implemented as [marker structs](#marker-struct).
+A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports physical units implemented as [marker structs](#marker-struct).
 
-* Must be a member of [`unitopia`](#unitopia)
+### `unitopia-marker-prefixes`
+
+A [`unitopia`](#unitopia) member [prefix package](#prefix-package) that exports prefixes implemented as [marker structs](#marker-struct).
+
+### `unitopia-strict-wrapper-prefixes`
+
+A [`unitopia`](#unitopia) member [prefix package](#prefix-package) that exports prefixes implemented as [strict open wrapper structs](#strict-open-wrapper-struct) whose `T` represents a unit.
+
+Requirements:
+
+* Must implement the same traits as for units.
+* Must have a generic parameter that represents storage
+
+Notes:
+
+* Example usage:
+  * `Milli<Second<u64>>`
 
 ### `unitopia-strict-wrapper-units`
 
-A [`unitopia`](#unitopia) member package that exports physical units implemented as [strict wrapper structs](#strict-wrapper-struct) whose `T` represents a generic storage type and whose `inner` field is `pub`.
+A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports physical units implemented as [strict open wrapper structs](#strict-open-wrapper-struct) whose `T` represents a generic storage type.
 
 * Must define, export, use the following macros:
   * `define_strict_wrapper_unit`
@@ -385,7 +401,6 @@ A [`unitopia`](#unitopia) member package that exports physical units implemented
   * `mul_div_scalar`
   * `mul_div_same_unit`
   * `mul_div_different_unit`
-* Must define all base units from SI.
 
 Notes:
 
@@ -605,6 +620,35 @@ A [unit](#unit) of a [base quantity](#base-quantity).
 
 A [unit](#unit) of a [derived quantity](#derived-quantity).
 
+### Prefix
+
+A name of a rational number acts as a coefficient for a [unit](#unit).
+
+Examples:
+
+* Kilo (1000 / 1)
+* Giga (1000000000 / 1)
+* Micro (1 / 1000)
+* Hexagesi (60 / 1)
+* Tetravigesi (24 / 1)
+
+Notes:
+
+* A prefix may be a part of a base unit name (e.g. kilogram)
+
+### SI prefix
+
+A [prefix](#prefix) that is a part of SI.
+
+### Custom prefix
+
+A [prefix](#prefix) that is not a part of SI.
+
+Examples:
+
+* Hexagesi (60 / 1)
+* Tetravigesi (24 / 1)
+
 ### Monomial
 
 An algebraic expression which is a multiplication of a set of variables raised to specific powers.
@@ -709,6 +753,31 @@ Notes:
 
 * These traits are scalar-only because their functions return `Self`
 
+### Unit package
+
+A Rust package that exports [unit](#unit) types.
+
+Requirements:
+
+* Must define all base units from SI.
+* Must define at least the following derived units:
+  * `Newton`
+  * `PowerOfHydrogen`
+  * `GalactosidaseActivityUnit`
+
+Allowances:
+
+* May define the derived units as type aliases.
+
+### Prefix package
+
+A Rust package that exports [prefix](#prefix) types.
+
+Requirements:
+
+* Must export all [SI prefixes](#si-prefix)
+* Must export all [custom prefixes](#custom-prefix) listed in examples
+
 ### Marker struct
 
 A struct whose every field is a `PhantomData`.
@@ -736,13 +805,24 @@ A struct with at least one generic parameter `T`, exactly one field `inner: T` a
 Requirements:
 
 * Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
-* Must implement `Deref`, `DerefMut`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
+* Must implement `Deref`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
   * Notes:
     * Must delegate the associated types, too, so that the wrapper of `String` would return `str` in `AsRef`
+
+### Open wrapper struct
+
+A [wrapper struct](#wrapper-struct) with the following properties:
+
+* Must have an `inner` field that is `pub`
+* Must implement `DerefMut` by delegating to the corresponding impl on the `inner` field
 
 ### Strict wrapper struct
 
 A [wrapper struct](#wrapper-struct) with exactly one generic parameter `T`, exactly one field `inner: T`, zero fields whose outer type is `PhantomData`.
+
+### Strict open wrapper struct
+
+A [wrapper struct](#wrapper-struct) that is both [open](#open-wrapper-struct) and [strict](#strict-wrapper-struct).
 
 ## Knowledge
 
