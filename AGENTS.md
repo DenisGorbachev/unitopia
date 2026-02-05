@@ -333,6 +333,7 @@ A Rust package that implements a generic newtype for unit-of-measurement + helpe
 Requirements:
 
 * Must export a [Measure newtype](#measure-newtype)
+* Must use US English spelling
 
 Design options:
 
@@ -388,28 +389,42 @@ Preferences:
     * Some types are measurements with a custom offset
       * Examples:
         * Timestamp is a measure of time with a custom offset (UNIX epoch)
-
-Implementation ideas:
-
-* May use `Mul` or `Div` generic types (e.g. `type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`)
+* Should follow SI
   * Notes:
-    * This makes the units which are semantically equivalent syntactically different
-      * Examples:
-        * `Mul<Kilogram, Meter>` and `Mul<Meter, Kilogram>`
-      * Solutions:
-        * Provide an `invert_unit` method for measures with `Mul` unit
-        * Switch to runtime check
-        * Represent all units in a system with a single type whose generic parameters are unit powers
-          * May use `typenum` crate
-* May use `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, Meter, 1, 1>, Mul<Second, Second, 1, 1>, 1, -1>;`)
+    * This is a preference, not a requirement
 
-Allowances:
+Open questions:
 
-* May not follow SI
+* How to represent [derived units](#derived-unit)?
+  * Examples:
+    * Newton
+    * Square meter
+  * Ideas:
+    * Represent them as separate units
+    * May use `Mul` or `Div` generic types (e.g. `type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`)
+      * Notes:
+        * This makes the units which are semantically equivalent syntactically different
+          * Examples:
+            * `Mul<Kilogram, Meter>` and `Mul<Meter, Kilogram>`
+          * Solutions:
+            * Provide an `invert_unit` method for measures with `Mul` unit
+            * Switch to runtime check
+            * Represent all units in a system with a single type whose generic parameters are unit powers
+              * May use `typenum` crate
+    * May use `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
+* How to represent units that are a constant multiple of other units?
+  * Examples:
+    * Minute is 60 \* Second
+    * Millisecond is 0.001 \* Second
+    * Foot is 0.3048 \* Meter (since an international agreement in 1959)
+  * Ideas:
+    * Represent them as base unit + [rational type](#rational-type)
+    * Represent them as completely different type
+    * Represent them as type that encodes the scale information in the type itself using `typenum` (see example: src/drafts/scale.rs)
 
 Notes:
 
-* The implementation ideas are just ideas. If you think this is a wrong idea, tell me about it and don't implement it.
+* The ideas are not requirements. If you think that an idea is wrong, tell me about it and don't implement it.
 
 ### Custom unit
 
@@ -418,6 +433,7 @@ A [unit](#unit) that is not a part of SI.
 Examples:
 
 * Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
+* Power of hydrogen (pH) defined as "−log10(a\_H+), where a\_H+ is the activity of hydrogen(1+) ions in solution"
 
 ### Quantity
 
@@ -436,7 +452,7 @@ Examples:
 
 ### Base quantity
 
-A [quantity](#quantity) that is not expressed as a multiplication of other quantities.
+A [quantity](#quantity) that is not expressed as a [monomial](#monomial) of other quantities.
 
 Examples:
 
@@ -446,7 +462,7 @@ Examples:
 
 ### Derived quantity
 
-A [quantity](#quantity) that is expressed as a multiplication of other quantities.
+A [quantity](#quantity) that is expressed as a [monomial](#monomial) of other quantities.
 
 Examples:
 
@@ -462,15 +478,60 @@ A magnitude of a [quantity](#quantity).
 Examples:
 
 * Second is a unit of time defined as "the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium-133 atom"
-* Metre is a unit of length defined as "the length of the path travelled by light in vacuum during a time interval of 1/299792458 of a second"
+* Meter is a unit of length defined as "the length of the path travelled by light in vacuum during a time interval of 1/299792458 of a second"
 * Mole is a unit of amount of substance defined as exactly 6.02214076 \* 10^23.
 
 Notes:
 
 * The units of the same [quantity](#quantity) can be converted between each other.
   * Examples:
-    * Metre and foot.
+    * Meter and foot.
     * Radian and degree.
+* Spelling of the metric unit for length:
+  * "Meter" in the US and the Philippines
+  * "Meter" in other English-speaking nations
+
+### Base unit
+
+A [unit](#unit) of a [base quantity](#base-quantity).
+
+### Derived unit
+
+A [unit](#unit) of a [derived quantity](#derived-quantity).
+
+### Monomial
+
+An algebraic expression which is a multiplication of a set of variables raised to specific powers.
+
+Examples:
+
+* m^2 (square meter, unit of area)
+* kg *m* s^-2 (newton, unit of force)
+
+Notes:
+
+* Some variables may have power = 0, so they may be omitted.
+* Division is represented by negative powers
+
+### Rational type
+
+A Rust type that can represent rational numbers.
+
+Examples:
+
+* `f32`
+* `f64`
+* `rust_decimal::Decimal`
+* `num::rational::Ratio`
+
+Non-examples:
+
+* `u32`
+* `u64`
+
+Notes:
+
+* Some rational types are lossy (e.g. `f32`, `f64`)
 
 ## Knowledge
 
@@ -1816,12 +1877,14 @@ derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
 errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
 itertools = "0.14.0"
+num = { version = "0.4.3", optional = true }
 num-traits = "0.2.19"
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
 strum = { version = "0.27.2", features = ["derive"] }
 stub-macro = { version = "0.2.1" }
 subtype = { git = "https://github.com/DenisGorbachev/subtype" }
+typenum = { version = "1.19.0", optional = true }
 
 [features]
 serde = ["dep:serde"]
@@ -1867,6 +1930,8 @@ mod macros;
 
 #[cfg(test)]
 mod drafts;
+
 mod units;
+
 pub use units::*;
 ```

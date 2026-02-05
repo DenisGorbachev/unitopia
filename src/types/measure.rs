@@ -11,10 +11,10 @@ use num_traits::Zero;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(transparent))]
 #[repr(transparent)]
-pub struct Measure<Quantity, Value> {
+pub struct Measure<Unit, Value> {
     #[cfg_attr(feature = "serde", serde(skip))]
     #[new(default)]
-    quantity: PhantomData<Quantity>,
+    quantity: PhantomData<Unit>,
     #[deref]
     #[deref_mut]
     #[as_ref]

@@ -4,6 +4,6 @@ macro_rules! def_quantity {
         #[derive(Eq, PartialEq, Ord, PartialOrd, Default, Hash, Clone, Debug)]
         pub struct $quantity;
 
-        pub type $measure<Storage> = $crate::Measure<$quantity, Storage>;
+        pub type $measure<Value> = $crate::Measure<$quantity, Value>;
     };
 }
