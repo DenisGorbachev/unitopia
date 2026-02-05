@@ -302,15 +302,14 @@ macro_rules! impl_prefix_mul_div_unit_traits {
 
 macro_rules! impl_prefix_mul_add_traits {
     ($prefix:ident) => {
-        impl<T, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>> for $prefix<T>
+        impl<T, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>> for $prefix<T>
         where
-            Rhs: unitopia_strict_wrapper_units::StrictWrapperUnit,
             T: unitopia_strict_wrapper_units::StrictWrapperUnit,
-            T: num_traits::MulAdd<Rhs, unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>, Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>>,
+            T: num_traits::MulAdd<Rhs, unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>, Output = unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>>,
         {
-            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
+            type Output = unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>;
 
-            fn mul_add(self, a: Rhs, b: unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>) -> Self::Output {
+            fn mul_add(self, a: Rhs, b: unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>) -> Self::Output {
                 num_traits::MulAdd::mul_add(self.inner, a, b)
             }
         }

@@ -8,6 +8,23 @@ pub trait StrictWrapperUnit {
     fn into_value(self) -> Self::Value;
 }
 
+pub trait UnitValue {
+    type Value;
+
+    fn into_value(self) -> Self::Value;
+}
+
+impl<T> UnitValue for T
+where
+    T: StrictWrapperUnit,
+{
+    type Value = <T as StrictWrapperUnit>::Value;
+
+    fn into_value(self) -> Self::Value {
+        <T as StrictWrapperUnit>::into_value(self)
+    }
+}
+
 #[macro_export]
 macro_rules! define_strict_wrapper_unit {
     ($name:ident, $unit_marker:path) => {
@@ -311,27 +328,27 @@ macro_rules! impl_unit_mul_div_measure_traits {
     ($unit:ident) => {
         impl<LhsValue, Rhs, OutValue> core::ops::Mul<Rhs> for $unit<LhsValue>
         where
-            Rhs: crate::StrictWrapperUnit,
+            Rhs: crate::UnitValue,
             LhsValue: core::ops::Mul<Rhs::Value, Output = OutValue>,
         {
-            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
+            type Output = unitopia_open_wrapper_arith_outputs::Prod<$unit<LhsValue>, Rhs, OutValue>;
 
             fn mul(self, rhs: Rhs) -> Self::Output {
-                let rhs_value = <Rhs as crate::StrictWrapperUnit>::into_value(rhs);
-                unitopia_measure::Measure::new_const(core::ops::Mul::mul(self.inner, rhs_value))
+                let rhs_value = <Rhs as crate::UnitValue>::into_value(rhs);
+                unitopia_open_wrapper_arith_outputs::Prod::from(core::ops::Mul::mul(self.inner, rhs_value))
             }
         }
 
         impl<LhsValue, Rhs, OutValue> core::ops::Div<Rhs> for $unit<LhsValue>
         where
-            Rhs: crate::StrictWrapperUnit,
+            Rhs: crate::UnitValue,
             LhsValue: core::ops::Div<Rhs::Value, Output = OutValue>,
         {
-            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Quot<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
+            type Output = unitopia_open_wrapper_arith_outputs::Quot<$unit<LhsValue>, Rhs, OutValue>;
 
             fn div(self, rhs: Rhs) -> Self::Output {
-                let rhs_value = <Rhs as crate::StrictWrapperUnit>::into_value(rhs);
-                unitopia_measure::Measure::new_const(core::ops::Div::div(self.inner, rhs_value))
+                let rhs_value = <Rhs as crate::UnitValue>::into_value(rhs);
+                unitopia_open_wrapper_arith_outputs::Quot::from(core::ops::Div::div(self.inner, rhs_value))
             }
         }
     };
@@ -339,17 +356,17 @@ macro_rules! impl_unit_mul_div_measure_traits {
 
 macro_rules! impl_unit_mul_add_traits {
     ($unit:ident) => {
-        impl<LhsValue, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>> for $unit<LhsValue>
+        impl<LhsValue, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_open_wrapper_arith_outputs::Prod<$unit<LhsValue>, Rhs, OutValue>> for $unit<LhsValue>
         where
-            Rhs: crate::StrictWrapperUnit,
+            Rhs: crate::UnitValue,
             LhsValue: num_traits::MulAdd<Rhs::Value, OutValue, Output = OutValue>,
         {
-            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
+            type Output = unitopia_open_wrapper_arith_outputs::Prod<$unit<LhsValue>, Rhs, OutValue>;
 
-            fn mul_add(self, a: Rhs, b: unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>) -> Self::Output {
-                let a_value = <Rhs as crate::StrictWrapperUnit>::into_value(a);
-                let b_value = b.into_value();
-                unitopia_measure::Measure::new_const(num_traits::MulAdd::mul_add(self.inner, a_value, b_value))
+            fn mul_add(self, a: Rhs, b: unitopia_open_wrapper_arith_outputs::Prod<$unit<LhsValue>, Rhs, OutValue>) -> Self::Output {
+                let a_value = <Rhs as crate::UnitValue>::into_value(a);
+                let b_value = b.inner;
+                unitopia_open_wrapper_arith_outputs::Prod::from(num_traits::MulAdd::mul_add(self.inner, a_value, b_value))
             }
         }
 
