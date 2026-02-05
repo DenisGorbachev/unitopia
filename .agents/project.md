@@ -90,6 +90,7 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
 * Must define, export, use the following macros:
   * `define_strict_wrapper_unit`
     * Must use `define_strict_wrapper_struct`
+* Must use the types from `unitopia-open-wrapper-arith-outputs` to implement the [general multiplication traits](#general-multiplication-trait)
 * Must contain the following tests:
   * `add_sub_scalar_failure` (compile-fail)
   * `add_sub_same_unit`
@@ -97,10 +98,6 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
   * `mul_div_scalar`
   * `mul_div_same_unit`
   * `mul_div_different_unit`
-
-Notes:
-
-* Refer to measure.rs to see how to implement the traits in a generic way using macros.
 
 ## `unitopia-measure`
 
