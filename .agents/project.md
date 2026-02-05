@@ -39,6 +39,7 @@ Requirements:
 
 * Must export the following macros:
   * `define_strict_wrapper_struct`
+* Must define all macros in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
 
 ## `unitopia-marker-units`
 
@@ -481,6 +482,7 @@ Requirements:
 * Must implement `Deref`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
   * Notes:
     * Must delegate the associated types, too, so that the wrapper of `String` would return `str` in `AsRef`
+* Must implement `From<T>`
 
 ## Open wrapper struct
 
