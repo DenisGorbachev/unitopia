@@ -485,6 +485,7 @@ Open questions:
 Notes:
 
 * The ideas are not requirements. If you think that an idea is wrong, tell me about it and don't implement it.
+* Stable Rust 1.92 supports arithmetic in const generics only for constant operands wrapped in braces (e.g. `Foo::<{ 2 + 2 }>::new(42)`)
 
 ### Measure newtype
 
