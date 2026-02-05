@@ -71,14 +71,14 @@ Requirements:
 * Must allow to represent a specific unit
   * May embed the unit name in the type name
   * May take the unit as a generic parameter
-* Must implement traits for adding or subtracting of values with the same unit (use [compile-fail tests]).
-* Must not implement traits for adding or subtracting of values with different units.
-* Must not implement traits for adding or subtracting of values with scalars.
+* Must implement traits for adding or subtracting of values with the same unit.
+* Must not implement traits for adding or subtracting of values with different units (use [compile-fail tests](#compile-fail-test)).
+* Must not implement traits for adding or subtracting of values with scalars (use [compile-fail tests](#compile-fail-test)).
 * Must implement traits for multiplying or dividing of values with the same or different units.
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
-* Must implement traits for adding or subtracting of values with scalars.
-* Must integrate with serialization frameworks (feature-gated), at least the following:
+* Must implement traits for multiplying or dividing of values with scalars.
+* Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
   * `bitcode`
@@ -87,7 +87,8 @@ Requirements:
 
 Preferences:
 
-* Should integrate with existing crates that provide similar types:
+* Should derive the serialization/deserialization traits instead of implementing them manually.
+* Should provide `From` or `TryFrom` implementations for similar types from other crates:
   * Examples:
     * `time` provides types that represent nanoseconds
     * `chrono` provides types that represent nanoseconds
@@ -128,10 +129,13 @@ Open questions:
       * Pros:
         * Less code
       * Cons: (I don't see any, but it puts the units and powers on the same level, so maybe some cons will be discovered during implementation)
-    * DUI4: Represent them as specifications of `Mul` or `Div` generic types
+    * DUIM: Represent them as specifications of `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
+      * Superseded by DUNTP and DUTFP
+    * DUIMD: Represent them as specifications of `Mul` or `Div` generic types
       * Examples:
         * `pub type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`
       * Notes:
+        * Superseded by DUIM
         * This makes the units which are semantically equivalent syntactically different
           * Examples:
             * `Mul<Kilogram, Meter>` and `Mul<Meter, Kilogram>`
@@ -140,8 +144,6 @@ Open questions:
             * Switch to runtime check
             * Represent all units in a system with a single type whose generic parameters are unit powers
               * May use `typenum` crate
-    * DUI5: Represent them as specifications of `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
-      * Superseded by
 * How to represent alternative units that are a constant multiple of base units?
   * Examples:
     * Minute is 60 * Second
@@ -229,7 +231,7 @@ Notes:
     * Radian and degree.
 * Spelling of the metric unit for length:
   * "Meter" in the US and the Philippines
-  * "Meter" in other English-speaking nations
+  * "Metre" in other English-speaking nations
 
 ## Base unit
 
