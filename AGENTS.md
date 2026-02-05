@@ -336,12 +336,13 @@ Notes:
 
 ### `unitopia`
 
-A Rust package that implements a generic newtype for unit-of-measurement + helpers.
+A Rust workspace package that provides multiple implementations of physical types.
 
 Requirements:
 
-* Must be a workspace package
+* Must keep its members in `packages` dir
 * Must contain at least one member package that exports a [physical type](#physical-type)
+* Members must use macros to avoid boilerplate code when defining units and prefixes
 * Must use US English spelling
 
 Notes:
@@ -356,11 +357,39 @@ Notes:
     * Generic marker struct with a single argument
     * Wrapper struct
 
+### `unitopia-macros`
+
+A [`unitopia`](#unitopia) member package that exports helper macros.
+
+Requirements:
+
+* Must export the following macros:
+  * `define_strict_wrapper_struct`
+
 ### `unitopia-marker-units`
 
-A Rust package that exports physical units implemented as [marker structs](#marker-struct).
+A [`unitopia`](#unitopia) member package that exports physical units implemented as [marker structs](#marker-struct).
 
 * Must be a member of [`unitopia`](#unitopia)
+
+### `unitopia-strict-wrapper-units`
+
+A [`unitopia`](#unitopia) member package that exports physical units implemented as [strict wrapper structs](#strict-wrapper-struct) whose `T` represents a generic storage type and whose `inner` field is `pub`.
+
+* Must define, export, use the following macros:
+  * `define_strict_wrapper_unit`
+    * Must use `define_strict_wrapper_struct`
+* Must contain the following tests:
+  * `add_sub_same_unit`
+  * `add_sub_different_unit` (compile-fail)
+  * `mul_div_scalar`
+  * `mul_div_same_unit`
+  * `mul_div_different_unit`
+* Must define all SI units.
+
+Notes:
+
+* Refer to measure.rs
 
 ### `unitopia-measure`
 
@@ -397,13 +426,14 @@ Requirements:
 * Must allow to represent a specific unit
   * May embed the unit name in the type name
   * May take the unit as a generic parameter
-* Must implement traits for adding or subtracting of values with the same unit.
-* Must not implement traits for adding or subtracting of values with different units (use [compile-fail tests](#compile-fail-test)).
-* Must not implement traits for adding or subtracting of values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
-* Must implement traits for multiplying or dividing of values with the same or different units.
+* Must implement [identity traits](#identity-trait).
+* Must implement [addition traits](#addition-trait) for values with the same unit.
+* Must not implement [addition traits](#addition-trait) for values with different units (use [compile-fail tests](#compile-fail-test)).
+* Must not implement [addition traits](#addition-trait) for values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
+* Must implement [multiplication traits](#multiplication-trait) for values with the same or different units.
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
-* Must implement traits for multiplying or dividing of values with scalars of the same storage type.
+* Must implement [multiplication traits](#multiplication-trait) for values with scalars of the same storage type.
 * Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
@@ -614,9 +644,55 @@ Notes:
 
 * Such files are used by `trybuild` to assert that they actually fail to compile.
 
+### Identity trait
+
+A trait from the following list:
+
+* `num_traits::ConstZero`
+* `num_traits::ConstOne`
+* `num_traits::Zero`
+* `num_traits::One`
+
+### Addition trait
+
+A trait from the following list:
+
+* `core::ops::Add`
+* `core::ops::AddAssign`
+* `core::ops::Sub`
+* `core::ops::SubAssign`
+* `num_traits::CheckedAdd`
+* `num_traits::CheckedSub`
+* `num_traits::SaturatingAdd`
+* `num_traits::SaturatingSub`
+* `num_traits::WrappingAdd`
+* `num_traits::WrappingSub`
+
+### Multiplication trait
+
+A trait from the following list:
+
+* `core::ops::Mul`
+* `core::ops::MulAssign`
+* `core::ops::Div`
+* `core::ops::DivAssign`
+* `num_traits::Pow`
+* `num_traits::MulAdd`
+* `num_traits::MulAddAssign`
+* `num_traits::CheckedMul`
+* `num_traits::CheckedDiv`
+* `num_traits::SaturatingMul`
+* `num_traits::SaturatingDiv`
+* `num_traits::WrappingMul`
+* `num_traits::WrappingDiv`
+
 ### Marker struct
 
 A struct whose every field is a `PhantomData`.
+
+Requirements:
+
+* Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
 
 ### Vanilla marker struct
 
@@ -626,13 +702,24 @@ A [marker struct](#marker-struct) without generic arguments.
 
 A [marker struct](#marker-struct) with at least one generic argument.
 
-### Wrapper struct
-
-A struct with exactly one field of type `T` (the generic parameter).
-
 ### Container struct
 
-A struct with at least one field of type `T` (the generic parameter).
+A struct with at least one generic parameter `T` and at least one field of type `T`.
+
+### Wrapper struct
+
+A struct with at least one generic parameter `T`, exactly one field `inner: T` and any number of fields whose outer type is `PhantomData`.
+
+Requirements:
+
+* Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
+* Must implement `Deref`, `DerefMut`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
+  * Notes:
+    * Must delegate the associated types, too, so that the wrapper of `String` would return `str` in `AsRef`
+
+### Strict wrapper struct
+
+A [wrapper struct](#wrapper-struct) with exactly one generic parameter `T`, exactly one field `inner: T`, zero fields whose outer type is `PhantomData`.
 
 ## Knowledge
 

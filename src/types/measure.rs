@@ -1,7 +1,7 @@
 //! Currently, [`Measure`] does not implement [`Mul`] and [`Div`] because multiplying one unit by another unit does not produce the same unit. It is possible to implement [`Mul`] and [`Div`] for [`Measure`] while specifying `Output = UnitMul<UnitA, UnitB>`, but this is a work for a future release.
 
-use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use core::marker::PhantomData;
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use derive_new::new;
