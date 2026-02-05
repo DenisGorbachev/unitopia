@@ -357,15 +357,18 @@ Notes:
     * Generic marker struct with a single argument
     * Wrapper struct
 
-### `unitopia-macros`
+### `unitopia-helpers`
 
-A [`unitopia`](#unitopia) member package that exports helper macros.
+A [`unitopia`](#unitopia) member package that exports various helpers.
 
 Requirements:
 
 * Must export the following macros:
   * `define_strict_wrapper_struct`
 * Must define all macros in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
+* Must export `Scalar<T>` (a [strict open wrapper struct](#strict-open-wrapper-struct) for scalars)
+  * Notes:
+    * Needed to implement `Mul`, `Div`, `MulAdd` in a generic way while satisfying Rust coherence rules
 
 ### `unitopia-marker-units`
 
