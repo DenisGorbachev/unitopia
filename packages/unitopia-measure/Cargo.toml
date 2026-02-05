@@ -15,6 +15,7 @@ derive-new = "0.7.0"
 num-traits = "0.2.19"
 rkyv = { version = "0.8.14", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
+unitopia-marker-arith-outputs = { path = "../unitopia-marker-arith-outputs" }
 wincode = { version = "0.3.1", features = ["derive"], optional = true }
 
 [features]

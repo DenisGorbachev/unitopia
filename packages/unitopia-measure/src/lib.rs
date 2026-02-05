@@ -12,10 +12,7 @@ macro_rules! def_quantity {
 
 mod measure;
 pub use measure::*;
-mod mul_unit;
-pub use mul_unit::*;
-mod div_unit;
-pub use div_unit::*;
+pub use unitopia_marker_arith_outputs::{Prod, Quot};
 mod pow_unit;
 pub use pow_unit::*;
 mod exponent;

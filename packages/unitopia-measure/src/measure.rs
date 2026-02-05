@@ -1,4 +1,4 @@
-use crate::{DivUnit, Exponent, MulUnit, PowUnit};
+use crate::{Exponent, PowUnit, Prod, Quot};
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use num_traits::ops::overflowing::{OverflowingAdd, OverflowingSub};
@@ -211,8 +211,8 @@ impl_binop_scalar!(Div, div);
 impl_binop_assign_scalar!(MulAssign, mul_assign);
 impl_binop_assign_scalar!(DivAssign, div_assign);
 
-impl_binop_measure!(Mul, mul, MulUnit);
-impl_binop_measure!(Div, div, DivUnit);
+impl_binop_measure!(Mul, mul, Prod);
+impl_binop_measure!(Div, div, Quot);
 
 impl_checked_binop_self!(CheckedAdd, checked_add);
 impl_checked_binop_self!(CheckedSub, checked_sub);
@@ -226,15 +226,15 @@ impl_wrapping_binop_self!(WrappingSub, wrapping_sub);
 impl_overflowing_binop_self!(OverflowingAdd, overflowing_add);
 impl_overflowing_binop_self!(OverflowingSub, overflowing_sub);
 
-impl<LhsUnit, RhsUnit, Value> MulAdd<Measure<RhsUnit, Value>, Measure<MulUnit<LhsUnit, RhsUnit>, Value>> for Measure<LhsUnit, Value>
+impl<LhsUnit, RhsUnit, Value> MulAdd<Measure<RhsUnit, Value>, Measure<Prod<LhsUnit, RhsUnit>, Value>> for Measure<LhsUnit, Value>
 where
     Value: MulAdd<Value, Value, Output = Value>,
 {
-    type Output = Measure<MulUnit<LhsUnit, RhsUnit>, Value>;
+    type Output = Measure<Prod<LhsUnit, RhsUnit>, Value>;
 
-    fn mul_add(self, a: Measure<RhsUnit, Value>, b: Measure<MulUnit<LhsUnit, RhsUnit>, Value>) -> Self::Output {
+    fn mul_add(self, a: Measure<RhsUnit, Value>, b: Measure<Prod<LhsUnit, RhsUnit>, Value>) -> Self::Output {
         let b_value = b.into_value();
-        Measure::<MulUnit<LhsUnit, RhsUnit>, Value>::new_const(self.value.mul_add(a.value, b_value))
+        Measure::<Prod<LhsUnit, RhsUnit>, Value>::new_const(self.value.mul_add(a.value, b_value))
     }
 }
 

@@ -711,6 +711,7 @@ dependencies = [
  "num-traits",
  "rkyv",
  "serde",
+ "unitopia-marker-arith-outputs",
  "wincode",
 ]
 
