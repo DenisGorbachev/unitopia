@@ -73,11 +73,11 @@ Requirements:
   * May take the unit as a generic parameter
 * Must implement traits for adding or subtracting of values with the same unit.
 * Must not implement traits for adding or subtracting of values with different units (use [compile-fail tests](#compile-fail-test)).
-* Must not implement traits for adding or subtracting of values with scalars (use [compile-fail tests](#compile-fail-test)).
+* Must not implement traits for adding or subtracting of values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
 * Must implement traits for multiplying or dividing of values with the same or different units.
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
-* Must implement traits for multiplying or dividing of values with scalars.
+* Must implement traits for multiplying or dividing of values with scalars of the same storage type.
 * Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
