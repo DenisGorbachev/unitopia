@@ -434,10 +434,12 @@ define_strict_wrapper_unit!(Meter, unitopia_marker_units::Meter);
 impl_strict_wrapper_unit_ops!(Meter);
 define_strict_wrapper_unit!(Mole, unitopia_marker_units::Mole);
 impl_strict_wrapper_unit_ops!(Mole);
-define_strict_wrapper_unit!(Newton, unitopia_marker_units::Newton);
-impl_strict_wrapper_unit_ops!(Newton);
 define_strict_wrapper_unit!(PowerOfHydrogen, unitopia_marker_units::PowerOfHydrogen);
 impl_strict_wrapper_unit_ops!(PowerOfHydrogen);
 define_strict_wrapper_unit!(Second, unitopia_marker_units::Second);
 impl_strict_wrapper_unit_ops!(Second);
+
+pub type Area<Value> = unitopia_open_wrapper_arith_outputs::Prod<Meter<Value>, Meter<Value>, Value>;
+pub type Newton<Value> = unitopia_open_wrapper_arith_outputs::Quot<unitopia_open_wrapper_arith_outputs::Prod<Kilogram<Value>, Meter<Value>, Value>, unitopia_open_wrapper_arith_outputs::Prod<Second<Value>, Second<Value>, Value>, Value>;
+pub type Volt<Value> = unitopia_open_wrapper_arith_outputs::Quot<unitopia_open_wrapper_arith_outputs::Prod<Newton<Value>, Meter<Value>, Value>, Ampere<Value>, Value>;
 pub use unitopia_helpers::Scalar;

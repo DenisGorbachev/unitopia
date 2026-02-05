@@ -700,6 +700,7 @@ name = "unitopia-marker-units"
 version = "0.1.0"
 dependencies = [
  "unitopia-helpers",
+ "unitopia-marker-arith-outputs",
 ]
 
 [[package]]

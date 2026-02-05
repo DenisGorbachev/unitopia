@@ -58,6 +58,7 @@ A [`unitopia`](#unitopia) member package that exports the following [marker stru
 
 * `Prod<A, B>`
 * `Quot<A, B>`
+* `Powr<A, N>`
 
 Requirements:
 
@@ -69,6 +70,7 @@ A [`unitopia`](#unitopia) member package that exports the following [marker stru
 
 * `Prod<A, B, T>`
 * `Quot<A, B, T>`
+* `Powr<A, N, T>`
 
 Requirements:
 

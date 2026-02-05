@@ -11,3 +11,4 @@ path = "src/lib.rs"
 
 [dependencies]
 unitopia-helpers = { path = "../unitopia-helpers" }
+unitopia-marker-arith-outputs = { path = "../unitopia-marker-arith-outputs" }
