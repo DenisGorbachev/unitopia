@@ -1,65 +1,20 @@
-[package]
-name = "unitopia"
-version = "0.1.0"
+[workspace]
+resolver = "2"
+members = [
+    "packages/unitopia-draft-aliases",
+    "packages/unitopia-draft-measure-v2",
+    "packages/unitopia-draft-measure-v3",
+    "packages/unitopia-draft-scale",
+    "packages/unitopia-helpers",
+    "packages/unitopia-marker-prefixes",
+    "packages/unitopia-marker-units",
+    "packages/unitopia-measure",
+    "packages/unitopia-strict-wrapper-prefixes",
+    "packages/unitopia-strict-wrapper-units",
+]
+
+[workspace.package]
 edition = "2024"
 rust-version = "1.85.0"
-description = ""
 homepage = "https://github.com/DenisGorbachev/unitopia"
 repository = "https://github.com/DenisGorbachev/unitopia"
-readme = "README.md"
-keywords = []
-categories = []
-exclude = [
-    ".*",
-    "*.local.*",
-    "doc/dev",
-    "specs",
-    "README.ts",
-    "AGENTS*.md",
-    "CLAUDE*.md",
-    "deno.json",
-    "commitlint.config.mjs",
-    "lefthook.yml",
-    "mise.toml",
-    "rumdl.toml",
-    "rustfmt.toml",
-    "yolobox"
-]
-
-[package.metadata.details]
-title = ""
-tagline = ""
-summary = ""
-announcement = ""
-readme = { generate = false }
-
-[dependencies]
-derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
-derive-new = "0.7.0"
-derive_more = { version = "2.1.1", features = ["full"] }
-errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
-itertools = "0.14.0"
-num = { version = "0.4.3", optional = true }
-num-traits = "0.2.19"
-serde = { version = "1.0.228", features = ["derive"], optional = true }
-standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
-strum = { version = "0.27.2", features = ["derive"] }
-stub-macro = { version = "0.2.1" }
-subtype = { git = "https://github.com/DenisGorbachev/subtype" }
-typenum = { version = "1.19.0", optional = true }
-
-[features]
-serde = ["dep:serde"]
-
-[package.metadata.cargo-machete]
-ignored = [
-    "derive-getters",
-    "derive-new",
-    "derive_more",
-    "errgonomic",
-    "itertools",
-    "standard-traits",
-    "strum",
-    "stub-macro",
-    "subtype",
-]

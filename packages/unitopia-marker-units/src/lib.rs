@@ -1,0 +1,10 @@
+unitopia_helpers::define_marker_struct!(Ampere);
+unitopia_helpers::define_marker_struct!(Candela);
+unitopia_helpers::define_marker_struct!(GalactosidaseActivityUnit);
+unitopia_helpers::define_marker_struct!(Kelvin);
+unitopia_helpers::define_marker_struct!(Kilogram);
+unitopia_helpers::define_marker_struct!(Meter);
+unitopia_helpers::define_marker_struct!(Mole);
+unitopia_helpers::define_marker_struct!(Newton);
+unitopia_helpers::define_marker_struct!(PowerOfHydrogen);
+unitopia_helpers::define_marker_struct!(Second);

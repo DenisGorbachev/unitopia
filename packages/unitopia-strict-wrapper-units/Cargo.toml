@@ -1,0 +1,33 @@
+[package]
+name = "unitopia-strict-wrapper-units"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+unitopia-helpers = { path = "../unitopia-helpers" }
+unitopia-measure = { path = "../unitopia-measure" }
+unitopia-marker-units = { path = "../unitopia-marker-units" }
+num-traits = "0.2.19"
+serde = { version = "1.0.228", features = ["derive"], optional = true }
+rkyv = { version = "0.8.14", optional = true }
+bitcode = { version = "0.6.9", features = ["derive"], optional = true }
+wincode = { version = "0.3.1", features = ["derive"], optional = true }
+typenum = "1.19.0"
+
+[features]
+serde = ["dep:serde"]
+rkyv = ["dep:rkyv"]
+bitcode = ["dep:bitcode"]
+wincode = ["dep:wincode"]
+
+[dev-dependencies]
+trybuild = "1.0.115"
+
+[package.metadata.cargo-machete]
+ignored = ["bitcode", "rkyv", "serde", "wincode"]

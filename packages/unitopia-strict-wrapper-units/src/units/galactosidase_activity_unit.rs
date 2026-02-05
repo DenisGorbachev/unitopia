@@ -1,0 +1,2 @@
+define_strict_wrapper_unit!(GalactosidaseActivityUnit, unitopia_marker_units::GalactosidaseActivityUnit);
+impl_strict_wrapper_unit_ops!(GalactosidaseActivityUnit);
