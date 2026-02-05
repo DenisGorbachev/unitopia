@@ -93,8 +93,8 @@ Open questions:
     * Foot is 0.3048 * Meter (since an international agreement in 1959)
   * Ideas:
     * Represent them as base unit + [rational type](#rational-type)
-    * Represent them as completely different type
     * Represent them as type that encodes the scale information in the type itself using `typenum` (see example: src/drafts/scale.rs)
+    * Represent them as completely different type
 
 Notes:
 
