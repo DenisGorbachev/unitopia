@@ -1,4 +1,7 @@
-mod prod;
-pub use prod::*;
-mod quot;
-pub use quot::*;
+use core::marker::PhantomData;
+
+#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
+pub struct Prod<A, B>(PhantomData<(A, B)>);
+
+#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
+pub struct Quot<A, B>(PhantomData<(A, B)>);
