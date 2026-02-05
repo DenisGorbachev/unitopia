@@ -381,7 +381,6 @@ A [`unitopia`](#unitopia) member [prefix package](#prefix-package) that exports 
 Requirements:
 
 * Must implement the same traits as for units.
-* Must have a generic parameter that represents storage
 
 Notes:
 
@@ -449,7 +448,7 @@ Requirements:
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
 * Must implement [scalar multiplication traits](#scalar-multiplication-trait) for values with scalars of the same storage type.
-* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit or and `B` parameter is a scalar
+* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit and `B` parameter is a scalar
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of `Self` and `A` units.
 * Must implement `num_traits::MulAdd` for values where `A` and `B` parameters are scalars
@@ -628,7 +627,7 @@ Examples:
 
 * Kilo (1000 / 1)
 * Giga (1000000000 / 1)
-* Micro (1 / 1000)
+* Micro (1 / 1000000)
 * Hexagesi (60 / 1)
 * Tetravigesi (24 / 1)
 
@@ -743,7 +742,7 @@ Notes:
 
 ### Scalar multiplication trait
 
-A trait that is either \[general multiplication trait] or a trait from the following list:
+A trait that is either [general multiplication trait](#general-multiplication-trait) or a trait from the following list:
 
 * `core::ops::MulAssign`
 * `core::ops::DivAssign`
