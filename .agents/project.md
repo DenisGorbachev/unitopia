@@ -52,6 +52,24 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
 
 A [`unitopia`](#unitopia) member [prefix package](#prefix-package) that exports prefixes implemented as [marker structs](#marker-struct).
 
+## `unitopia-marker-arith-outputs`
+
+A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports the following [marker structs](#marker-struct):
+
+* `Prod<A, B>`
+* `Quot<A, B>`
+
+## `unitopia-open-wrapper-arith-outputs`
+
+A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports the following [marker structs](#marker-struct):
+
+* `Prod<A, B, S>`
+* `Quot<A, B, S>`
+
+Notes:
+
+* `S` in the definitions above is a storage type.
+
 ## `unitopia-strict-wrapper-prefixes`
 
 A [`unitopia`](#unitopia) member [prefix package](#prefix-package) that exports prefixes implemented as [strict open wrapper structs](#strict-open-wrapper-struct) whose `T` represents a unit.
@@ -504,3 +522,11 @@ A [wrapper struct](#wrapper-struct) with exactly one generic parameter `T`, exac
 ## Strict open wrapper struct
 
 A [wrapper struct](#wrapper-struct) that is both [open](#open-wrapper-struct) and [strict](#strict-wrapper-struct).
+
+## Arith output
+
+A struct that represents the output of the arithmetic operation.
+
+Notes:
+
+* Arith outputs should be used as `type Output` in the arithmetic trait implementations.
