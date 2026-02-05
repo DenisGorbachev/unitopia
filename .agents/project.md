@@ -69,8 +69,9 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
   * `define_strict_wrapper_unit`
     * Must use `define_strict_wrapper_struct`
 * Must contain the following tests:
+  * `add_sub_scalar_failure` (compile-fail)
   * `add_sub_same_unit`
-  * `add_sub_different_unit` (compile-fail)
+  * `add_sub_different_unit_failure` (compile-fail)
   * `mul_div_scalar`
   * `mul_div_same_unit`
   * `mul_div_different_unit`
@@ -120,11 +121,11 @@ Requirements:
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
 * Must implement [scalar multiplication traits](#scalar-multiplication-trait) for values with scalars of the same storage type.
-* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit and `B` parameter is a scalar
+* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit and `B` parameter is a unit that represents a multiplication of `A` and `Self`
   * Requirements:
-    * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of `Self` and `A` units.
-* Must implement `num_traits::MulAdd` for values where `A` and `B` parameters are scalars
-* Must implement `num_traits::MulAddAssign` for values where `A` and `B` parameters are scalars
+    * Must have a `type Output` with a distinct unit that represents a multiplication of `Self` and `A` units.
+* Must implement `num_traits::MulAdd` for values where `A` parameter is a scalar and `B` parameter is `Self`
+* Must implement `num_traits::MulAddAssign` for values where `A` parameter is a scalar and `B` parameter is `Self`
 * Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
@@ -398,7 +399,7 @@ A trait from the following list:
 
 * `core::ops::Mul`
 * `core::ops::Div`
-* `num_traits::Pow`
+* `num_traits::Pow` (note: the exponent must be scalar)
 * `num_traits::CheckedMul`
 * `num_traits::CheckedDiv`
 * `num_traits::SaturatingMul`
@@ -418,11 +419,10 @@ A trait that is either [general multiplication trait](#general-multiplication-tr
 
 * `core::ops::MulAssign`
 * `core::ops::DivAssign`
-* `num_traits::MulAddAssign`
 
 Notes:
 
-* These traits are scalar-only because their functions return `Self`
+* These traits are scalar-only because their functions return `Self` (normal variants) or `()` (`Assign` variants)
 
 ## Unit package
 
@@ -435,6 +435,7 @@ Requirements:
   * `Newton`
   * `PowerOfHydrogen`
   * `GalactosidaseActivityUnit`
+* Must define all units in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
 
 Allowances:
 
@@ -448,6 +449,7 @@ Requirements:
 
 * Must export all [SI prefixes](#si-prefix)
 * Must export all [custom prefixes](#custom-prefix) listed in examples
+* Must define all prefixes in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
 
 ## Marker struct
 
