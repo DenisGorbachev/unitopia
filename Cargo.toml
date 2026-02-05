@@ -6,9 +6,11 @@ members = [
     "packages/unitopia-draft-measure-v3",
     "packages/unitopia-draft-scale",
     "packages/unitopia-helpers",
+    "packages/unitopia-marker-arith-outputs",
     "packages/unitopia-marker-prefixes",
     "packages/unitopia-marker-units",
     "packages/unitopia-measure",
+    "packages/unitopia-open-wrapper-arith-outputs",
     "packages/unitopia-strict-wrapper-prefixes",
     "packages/unitopia-strict-wrapper-units",
 ]

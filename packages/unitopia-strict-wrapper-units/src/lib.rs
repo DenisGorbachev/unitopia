@@ -314,7 +314,7 @@ macro_rules! impl_unit_mul_div_measure_traits {
             Rhs: crate::StrictWrapperUnit,
             LhsValue: core::ops::Mul<Rhs::Value, Output = OutValue>,
         {
-            type Output = unitopia_measure::Measure<crate::MulUnit<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit>, OutValue>;
+            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
 
             fn mul(self, rhs: Rhs) -> Self::Output {
                 let rhs_value = <Rhs as crate::StrictWrapperUnit>::into_value(rhs);
@@ -327,7 +327,7 @@ macro_rules! impl_unit_mul_div_measure_traits {
             Rhs: crate::StrictWrapperUnit,
             LhsValue: core::ops::Div<Rhs::Value, Output = OutValue>,
         {
-            type Output = unitopia_measure::Measure<crate::DivUnit<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit>, OutValue>;
+            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Quot<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
 
             fn div(self, rhs: Rhs) -> Self::Output {
                 let rhs_value = <Rhs as crate::StrictWrapperUnit>::into_value(rhs);
@@ -339,14 +339,14 @@ macro_rules! impl_unit_mul_div_measure_traits {
 
 macro_rules! impl_unit_mul_add_traits {
     ($unit:ident) => {
-        impl<LhsValue, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_measure::Measure<crate::MulUnit<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit>, OutValue>> for $unit<LhsValue>
+        impl<LhsValue, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>> for $unit<LhsValue>
         where
             Rhs: crate::StrictWrapperUnit,
             LhsValue: num_traits::MulAdd<Rhs::Value, OutValue, Output = OutValue>,
         {
-            type Output = unitopia_measure::Measure<crate::MulUnit<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit>, OutValue>;
+            type Output = unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>;
 
-            fn mul_add(self, a: Rhs, b: unitopia_measure::Measure<crate::MulUnit<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit>, OutValue>) -> Self::Output {
+            fn mul_add(self, a: Rhs, b: unitopia_measure::Measure<unitopia_open_wrapper_arith_outputs::Prod<<Self as crate::StrictWrapperUnit>::Unit, Rhs::Unit, OutValue>, OutValue>) -> Self::Output {
                 let a_value = <Rhs as crate::StrictWrapperUnit>::into_value(a);
                 let b_value = b.into_value();
                 unitopia_measure::Measure::new_const(num_traits::MulAdd::mul_add(self.inner, a_value, b_value))
@@ -424,6 +424,3 @@ impl_strict_wrapper_unit_ops!(PowerOfHydrogen);
 define_strict_wrapper_unit!(Second, unitopia_marker_units::Second);
 impl_strict_wrapper_unit_ops!(Second);
 pub use unitopia_helpers::Scalar;
-
-mod derived_unit;
-pub use derived_unit::*;

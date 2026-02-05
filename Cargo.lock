@@ -685,6 +685,10 @@ name = "unitopia-helpers"
 version = "0.1.0"
 
 [[package]]
+name = "unitopia-marker-arith-outputs"
+version = "0.1.0"
+
+[[package]]
 name = "unitopia-marker-prefixes"
 version = "0.1.0"
 dependencies = [
@@ -711,6 +715,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "unitopia-open-wrapper-arith-outputs"
+version = "0.1.0"
+
+[[package]]
 name = "unitopia-strict-wrapper-prefixes"
 version = "0.1.0"
 dependencies = [
@@ -720,6 +728,7 @@ dependencies = [
  "serde",
  "unitopia-helpers",
  "unitopia-measure",
+ "unitopia-open-wrapper-arith-outputs",
  "unitopia-strict-wrapper-units",
  "wincode",
 ]
@@ -733,10 +742,10 @@ dependencies = [
  "rkyv",
  "serde",
  "trybuild",
- "typenum",
  "unitopia-helpers",
  "unitopia-marker-units",
  "unitopia-measure",
+ "unitopia-open-wrapper-arith-outputs",
  "wincode",
 ]
 

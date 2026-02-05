@@ -365,7 +365,7 @@ Notes:
   * Archetype
     * Value
     * Vanilla marker struct
-    * Generic marker struct with a single argument
+    * Generic marker struct with only a single argument
     * Wrapper struct
 
 ### `unitopia-helpers`
@@ -391,21 +391,26 @@ A [`unitopia`](#unitopia) member [prefix package](#prefix-package) that exports 
 
 ### `unitopia-marker-arith-outputs`
 
-A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports the following [marker structs](#marker-struct):
+A [`unitopia`](#unitopia) member package that exports the following [marker structs](#marker-struct):
 
 * `Prod<A, B>`
 * `Quot<A, B>`
 
+Requirements:
+
+* Must define all types in src/lib.rs
+
 ### `unitopia-open-wrapper-arith-outputs`
 
-A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports the following [marker structs](#marker-struct):
+A [`unitopia`](#unitopia) member package that exports the following [marker structs](#marker-struct):
 
-* `Prod<A, B, S>`
-* `Quot<A, B, S>`
+* `Prod<A, B, T>`
+* `Quot<A, B, T>`
 
-Notes:
+Requirements:
 
-* `S` in the definitions above is a storage type.
+* Every arith output type must have a `pub inner: T` field (`T` is the storage type)
+* Must define all types in src/lib.rs
 
 ### `unitopia-strict-wrapper-prefixes`
 
@@ -838,8 +843,6 @@ Requirements:
 
 * Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
 * Must implement `Deref`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
-  * Notes:
-    * Must delegate the associated types, too, so that the wrapper of `String` would return `str` in `AsRef`
 * Must implement `From<T>`
 
 ### Open wrapper struct
@@ -907,9 +910,11 @@ members = [
     "packages/unitopia-draft-measure-v3",
     "packages/unitopia-draft-scale",
     "packages/unitopia-helpers",
+    "packages/unitopia-marker-arith-outputs",
     "packages/unitopia-marker-prefixes",
     "packages/unitopia-marker-units",
     "packages/unitopia-measure",
+    "packages/unitopia-open-wrapper-arith-outputs",
     "packages/unitopia-strict-wrapper-prefixes",
     "packages/unitopia-strict-wrapper-units",
 ]

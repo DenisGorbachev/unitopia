@@ -13,12 +13,12 @@ path = "src/lib.rs"
 unitopia-helpers = { path = "../unitopia-helpers" }
 unitopia-measure = { path = "../unitopia-measure" }
 unitopia-marker-units = { path = "../unitopia-marker-units" }
+unitopia-open-wrapper-arith-outputs = { path = "../unitopia-open-wrapper-arith-outputs" }
 num-traits = "0.2.19"
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 rkyv = { version = "0.8.14", optional = true }
 bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 wincode = { version = "0.3.1", features = ["derive"], optional = true }
-typenum = "1.19.0"
 
 [features]
 serde = ["dep:serde"]
