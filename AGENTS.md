@@ -433,13 +433,6 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
   * `define_strict_wrapper_unit`
     * Must use `define_strict_wrapper_struct`
 * Must use the types from `unitopia-open-wrapper-arith-outputs` to implement the [general multiplication traits](#general-multiplication-trait)
-* Must contain the following tests:
-  * `add_sub_scalar_failure` (compile-fail)
-  * `add_sub_same_unit`
-  * `add_sub_different_unit_failure` (compile-fail)
-  * `mul_div_scalar`
-  * `mul_div_same_unit`
-  * `mul_div_different_unit`
 
 ### `unitopia-measure`
 
@@ -795,15 +788,23 @@ A Rust package that exports [unit](#unit) types.
 Requirements:
 
 * Must define all base units from SI.
-* Must define at least the following derived units:
-  * `Newton`
+* Must define at least the following non-SI units:
   * `PowerOfHydrogen`
   * `GalactosidaseActivityUnit`
+* Must define at least the following derived units as type aliases (as compositions of base units and other types):
+  * `Area`
+  * `Newton`
+  * `Volt`
 * Must define all units in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
-
-Allowances:
-
-* May define the derived units as type aliases.
+* Must contain the following tests:
+  * `add_sub_scalar_failure` (compile-fail)
+  * `add_sub_same_unit`
+  * `add_sub_different_unit_failure` (compile-fail)
+  * `mul_div_scalar`
+  * `mul_div_same_unit`
+  * `mul_div_different_unit`
+  * `newton_eq_kg_m_s2`
+    * This test must check that 1 Newton is equal to 1 Kilogram *1 Meter / (1 Second* 1 Second)
 
 ### Prefix package
 
