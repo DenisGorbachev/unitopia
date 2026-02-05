@@ -336,7 +336,7 @@ Notes:
 
 ### `unitopia`
 
-A Rust workspace package that provides multiple implementations of physical types.
+A Rust workspace that provides multiple implementations of physical types.
 
 Requirements:
 
@@ -385,7 +385,7 @@ A [`unitopia`](#unitopia) member package that exports physical units implemented
   * `mul_div_scalar`
   * `mul_div_same_unit`
   * `mul_div_different_unit`
-* Must define all SI units.
+* Must define all base units from SI.
 
 Notes:
 
@@ -413,7 +413,7 @@ Examples:
 
 Notes:
 
-* Sizes must be calculated for a pair of values with the largest and smallest prefix
+* Sizes must be calculated for a pair of values with the largest and smallest SI prefix
 
 ### Physical type
 
@@ -430,10 +430,10 @@ Requirements:
 * Must implement [addition traits](#addition-trait) for values with the same unit.
 * Must not implement [addition traits](#addition-trait) for values with different units (use [compile-fail tests](#compile-fail-test)).
 * Must not implement [addition traits](#addition-trait) for values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
-* Must implement [multiplication traits](#multiplication-trait) for values with the same or different units.
+* Must implement [general multiplication traits](#general-multiplication-trait) for values with the same or different units.
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
-* Must implement [multiplication traits](#multiplication-trait) for values with scalars of the same storage type.
+* Must implement [scalar multiplication traits](#scalar-multiplication-trait) for values with scalars of the same storage type.
 * Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
@@ -486,7 +486,7 @@ Open questions:
         * Less code
       * Cons: (I don't see any, but it puts the units and powers on the same level, so maybe some cons will be discovered during implementation)
     * DUIM: Represent them as specifications of `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
-      * Superseded by DUNTP and DUTFP
+      * Superseded by DUTNP and DUTFP
     * DUIMD: Represent them as specifications of `Mul` or `Div` generic types
       * Examples:
         * `pub type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`
@@ -515,7 +515,9 @@ Open questions:
 Notes:
 
 * The ideas are not requirements. If you think that an idea is wrong, tell me about it and don't implement it.
-* Stable Rust 1.92 supports arithmetic in const generics only for constant operands wrapped in braces (e.g. `Foo::<{ 2 + 2 }>::new(42)`)
+* Stable Rust 1.85 supports arithmetic in const generics only for constant operands wrapped in braces (e.g. `Foo::<{ 2 + 2 }>::new(42)`)
+* Some units are non-linear (example: pH), so they should not implement conversion by scalar multiple
+  * `unitopia` contains packages with different architectures. If the architecture is specific, such conversion must not be implemented for non-linear units, but if the architecture is generic, then such conversion should be implemented for non-linear units (because it must be implemented for linear units).
 
 ### Measure newtype
 
@@ -667,24 +669,37 @@ A trait from the following list:
 * `num_traits::SaturatingSub`
 * `num_traits::WrappingAdd`
 * `num_traits::WrappingSub`
+* `num_traits::OverflowingAdd`
+* `num_traits::OverflowingSub`
 
-### Multiplication trait
+### General multiplication trait
 
 A trait from the following list:
 
 * `core::ops::Mul`
-* `core::ops::MulAssign`
 * `core::ops::Div`
-* `core::ops::DivAssign`
 * `num_traits::Pow`
 * `num_traits::MulAdd`
-* `num_traits::MulAddAssign`
 * `num_traits::CheckedMul`
 * `num_traits::CheckedDiv`
 * `num_traits::SaturatingMul`
 * `num_traits::SaturatingDiv`
 * `num_traits::WrappingMul`
 * `num_traits::WrappingDiv`
+* `num_traits::OverflowingMul`
+* `num_traits::OverflowingDiv`
+
+### Scalar multiplication trait
+
+A trait that is either \[general multiplication trait] or a trait from the following list:
+
+* `core::ops::MulAssign`
+* `core::ops::DivAssign`
+* `num_traits::MulAddAssign`
+
+Notes:
+
+* These traits are scalar-only because their functions return `Self`
 
 ### Marker struct
 
@@ -2095,8 +2110,6 @@ ignored = [
 
 ```rust
 //! Measurement utilities and unit helpers.
-
-
 
 mod quantities;
 
