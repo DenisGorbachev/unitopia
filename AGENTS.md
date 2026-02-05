@@ -462,6 +462,9 @@ Requirements:
   * `bitcode`
   * `wincode`
 * Must implement checked, wrapping, overflowing, saturating arithmetic operation traits from `num-traits`
+* Must use methods instead of operators in trait implementations
+  * Examples:
+    * Use `add_assign` instead of `+=`
 
 Preferences:
 
@@ -869,7 +872,7 @@ members = [
     "packages/unitopia-draft-measure-v2",
     "packages/unitopia-draft-measure-v3",
     "packages/unitopia-draft-scale",
-    "packages/unitopia-macros",
+    "packages/unitopia-helpers",
     "packages/unitopia-marker-prefixes",
     "packages/unitopia-marker-units",
     "packages/unitopia-measure",
