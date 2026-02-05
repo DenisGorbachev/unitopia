@@ -326,48 +326,84 @@ You are running in a sandbox with limited network access.
 
 ## Project concepts
 
+### This document
+
+A specification for [`unitopia`](#unitopia)
+
+Notes:
+
+* Some list items have a format "{id}: {text}" where id is a string in CAPS (you can use the id to refer to the list item)
+
 ### `unitopia`
 
 A Rust package that implements a generic newtype for unit-of-measurement + helpers.
 
 Requirements:
 
-* Must export a [Measure newtype](#measure-newtype)
+* Must be a workspace package
+* Must contain at least one member package that exports a [physical type](#physical-type)
 * Must use US English spelling
 
-Design options:
+Notes:
 
-* Add scaling
-  * Tasks
-    * Add `numerator: i64`, `denominator: NonZeroU64`, `power: i64`
-  * Evaluation
-    * Notes:
-      * Measure is currently #\[repr(transparent)] + serde(transparent) and Deref to Value; adding fields breaks that ABI/serde model and the ergonomic Deref behavior.
-      * Derived Eq/Ord/Hash would become structurally wrong unless you normalize; 1/2 *10^1 and 5/10* 10^1 should compare equal but won’t without canonicalization.
-      * You’ll need a sign (negative values are real in many quantities), a non‑zero denominator (should be NonZeroU64), and a policy for
-        normalization + overflow.
-      * power: u64 only allows non‑negative exponents; very small values then require huge denominators (overflow risk). A signed exponent (i32/i64)
-        or big integer coefficient is more robust.
-      * Arithmetic becomes more complex: add/sub require aligning scale/denominator, mul/div grows numerator/denominator and can overflow unless you
-        reduce or use big integers.
-    * Advice:
-      A less disruptive path: keep Measure\<Quantity, Value> generic and add a dedicated value type (e.g., ScaledRational or Decimal) that internally
-      uses (numerator, denominator, power) and implements Add/Sub/Mul/Div/Zero. Then Measure\<Quantity, ScaledRational> gives you integer arithmetic,
-      while existing users can still use f32/f64 or i64 as Value. If you want extreme range/precision, consider an existing crate like rust\_decimal,
-      or num\_rational::Ratio with num\_bigint::BigInt.
+* Design choices:
+  * Kind
+    * Unit
+    * Prefix
+  * Archetype
+    * Value
+    * Vanilla marker struct
+    * Generic marker struct with a single argument
+    * Wrapper struct
 
-### Measure newtype
+### `unitopia-marker-units`
+
+A Rust package that exports physical units implemented as [marker structs](#marker-struct).
+
+* Must be a member of [`unitopia`](#unitopia)
+
+### `unitopia-measure`
+
+* Must export [Measure](#measure-newtype)
+
+* Must be a member of [`unitopia`](#unitopia)
+
+### Package metric
+
+A value assigned to a specific code package.
+
+Examples:
+
+* Speed of calculations
+* Min amount of memory used
+* Size of code that constructs values
+* Size of debug representation
+* Scalability of trait implementations
+* Ability to define custom units
+* Ability to define custom prefixes (rational coefficients) for units
+
+Notes:
+
+* Sizes must be calculated for a pair of values with the largest and smallest prefix
+
+### Physical type
 
 A newtype that represents a physical measurement outcome.
 
 Requirements:
 
-* Must support a [custom unit](#custom-unit).
 * Must support a generic storage type (e.g. `u32`, `u64`, `i32`, `i64`, `f32`, `f64` or any other generic type that implements the necessary traits for arithmetic operations).
-* Must disallow adding or subtracting measures of different units.
-* Must allow multiplying or dividing measures of different units.
-  * The result must have its own distinct unit that is a multiplication or division of input units.
 * Must support fractional values (e.g. millisecond).
+* Must allow to represent a specific unit
+  * May embed the unit name in the type name
+  * May take the unit as a generic parameter
+* Must implement traits for adding or subtracting of values with the same unit (use \[compile-fail tests]).
+* Must not implement traits for adding or subtracting of values with different units.
+* Must not implement traits for adding or subtracting of values with scalars.
+* Must implement traits for multiplying or dividing of values with the same or different units.
+  * Requirements:
+    * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
+* Must implement traits for adding or subtracting of values with scalars.
 * Must integrate with serialization frameworks (feature-gated), at least the following:
   * `serde`
   * `rkyv`
@@ -400,8 +436,27 @@ Open questions:
     * Newton
     * Square meter
   * Ideas:
-    * Represent them as separate units
-    * May use `Mul` or `Div` generic types (e.g. `type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`)
+    * DUS: Represent them as separate types
+    * DUTNP: Represent them as tuples of nested pairs where the first element is the [base unit](#base-unit) and the second element is the power
+      * Examples
+        * `pub type Newton = ((Kilogram, 1), (Meter, 1), (Second, -2));`
+      * Properties:
+        * Semantically same are syntactically same: No
+          * Counterexamples:
+            * `pub type Newton2 = ((Meter, 1), (Kilogram, 1), (Second, -2));`
+          * Notes:
+            * This can be mitigated by convention:
+              * Document a specific order of units as canonical
+              * Implement arithmetic traits in a way that `type Output` has a canonical order of units
+    * DUTFP: Represent them as tuples of flattened pairs where the first element is the [base unit](#base-unit) and the second element is the power
+      * Examples:
+        * `pub type Newton = (Kilogram, 1, Meter, 1, Second, -2);`
+      * Pros:
+        * Less code
+      * Cons: (I don't see any, but it puts the units and powers on the same level, so maybe some cons will be discovered during implementation)
+    * DUI4: Represent them as specifications of `Mul` or `Div` generic types
+      * Examples:
+        * `pub type Newton = Div<Mul<Kilogram, Meter>, Mul<Second, Second>>;`
       * Notes:
         * This makes the units which are semantically equivalent syntactically different
           * Examples:
@@ -411,20 +466,31 @@ Open questions:
             * Switch to runtime check
             * Represent all units in a system with a single type whose generic parameters are unit powers
               * May use `typenum` crate
-    * May use `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
-* How to represent units that are a constant multiple of other units?
+    * DUI5: Represent them as specifications of `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
+      * Superseded by
+* How to represent alternative units that are a constant multiple of base units?
   * Examples:
     * Minute is 60 \* Second
     * Millisecond is 0.001 \* Second
     * Foot is 0.3048 \* Meter (since an international agreement in 1959)
+  * Notes:
+    * Using SI prefixes is not sufficient because the alternative units may have arbitrary coefficients (see the "Foot" example)
   * Ideas:
-    * Represent them as base unit + [rational type](#rational-type)
-    * Represent them as type that encodes the scale information in the type itself using `typenum` (see example: src/drafts/scale.rs)
-    * Represent them as completely different type
+    * CMS: Represent them as a separate type
+    * CMBU: Represent them as a base unit type, but use a [rational type](#rational-type) for the value (put the scale in the value)
+    * CMTT: Represent them as type that encodes the scale information in the type itself using `typenum` (see example: src/drafts/scale.rs)
 
 Notes:
 
 * The ideas are not requirements. If you think that an idea is wrong, tell me about it and don't implement it.
+
+### Measure newtype
+
+A [physical type](#physical-type) that takes the [unit](#unit) as a generic parameter.
+
+Requirements:
+
+* Must support [custom units](#custom-unit).
 
 ### Custom unit
 
@@ -532,6 +598,38 @@ Non-examples:
 Notes:
 
 * Some rational types are lossy (e.g. `f32`, `f64`)
+
+### Compile-fail test
+
+A Rust file that is expected to fail to compile.
+
+Requirements:
+
+* Must be in a directory that is not used by cargo by default (e.g. `tests/compile_fail`)
+
+Notes:
+
+* Such files are used by `trybuild` to assert that they actually fail to compile.
+
+### Marker struct
+
+A struct whose every field is a `PhantomData`.
+
+### Vanilla marker struct
+
+A [marker struct](#marker-struct) without generic arguments.
+
+### Generic marker struct
+
+A [marker struct](#marker-struct) with at least one generic argument.
+
+### Wrapper struct
+
+A struct with exactly one field of type `T` (the generic parameter).
+
+### Container struct
+
+A struct with at least one field of type `T` (the generic parameter).
 
 ## Knowledge
 
