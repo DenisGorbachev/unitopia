@@ -77,13 +77,11 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
 
 Notes:
 
-* Refer to measure.rs
+* Refer to measure.rs to see how to implement the traits in a generic way using macros.
 
 ## `unitopia-measure`
 
-* Must export [Measure](#measure-newtype)
-
-* Must be a member of [`unitopia`](#unitopia)
+A [`unitopia`](#unitopia) member package that exports [Measure](#measure-newtype).
 
 ## Package metric
 
