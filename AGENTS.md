@@ -2096,9 +2096,7 @@ ignored = [
 ```rust
 //! Measurement utilities and unit helpers.
 
-mod coefficients;
 
-pub use coefficients::*;
 
 mod quantities;
 
