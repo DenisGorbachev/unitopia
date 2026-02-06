@@ -469,7 +469,7 @@ Requirements:
   * `mul_div_same_unit`
   * `mul_div_different_unit`
   * `newton_eq_kg_m_s2`
-    * This test must check that 1 Newton is equal to 1 Kilogram *1 Meter / (1 Second* 1 Second)
+    * This test must check that `1 Newton` is equal to `1 Kilogram * 1 Meter / (1 Second * 1 Second)`
 
 ## Prefix package
 
@@ -480,6 +480,10 @@ Requirements:
 * Must export all [SI prefixes](#si-prefix)
 * Must export all [custom prefixes](#custom-prefix) listed in examples
 * Must define all prefixes in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
+* Must contain the following tests:
+  * `add_atto_zetta_is_zetta`
+  * `mul_atto_scalar_is_atto`
+  * `mul_atto_zetta_is_zetta` (use different units)
 
 ## Marker struct
 
