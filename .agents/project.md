@@ -484,10 +484,16 @@ Requirements:
   * `add_atto_zetta_is_zetta`
     * Must construct `a` as 1 attometer from `1usize`.
     * Must construct `b` as 1 zettameter from `1usize`.
+    * Must `assert!(a > b);`
     * Must calculate `let sum = a + b;`
-    * Must assert that the sum has the zetta prefix
+    * Must assert that the sum has the zetta prefix and preserves physical value.
+      * Must not treat prefix labels as value-neutral (e.g. `1 attometer + 1 zettameter != 2 zettameters`).
+    * Must `assert!(sum > a);`
+    * Must `assert!(sum > b);`
     * Must calculate `let diff = sum - b;`
     * Must assert that `diff` has the zetta prefix
+    * Must `assert!(diff < sum);`
+    * Must `assert!(diff > b);`
     * Must calculate `(diff_atto, diff_atto_remainder)` by converting it to a value with atto prefix
     * Must `assert!(diff_atto_remainder.is_zero());`
     * Must `assert_eq!(diff_atto, a);`
