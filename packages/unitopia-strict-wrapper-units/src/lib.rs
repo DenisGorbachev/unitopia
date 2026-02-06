@@ -42,32 +42,46 @@ macro_rules! define_strict_wrapper_unit {
                 self.inner
             }
         }
+
         unitopia_helpers::impl_wincode_schema_through_inner!($name);
+
+        impl_strict_wrapper_unit_ops!($name);
+    };
+}
+
+macro_rules! impl_strict_wrapper_unit_ops {
+    ($unit:ident) => {
+        unitopia_helpers::impl_wrapper_identity_traits!($unit);
+        unitopia_helpers::impl_wrapper_add_sub_traits!($unit);
+        impl_unit_scalar_mul_div_traits!($unit);
+        impl_unit_mul_div_measure_traits!($unit);
+        impl_unit_mul_add_traits!($unit);
+        impl_unit_pow_traits!($unit);
     };
 }
 
 macro_rules! impl_unit_scalar_mul_div_traits {
     ($unit:ident) => {
-        impl<T> core::ops::Mul<crate::Scalar<T>> for $unit<T>
+        impl<T> core::ops::Mul<unitopia_helpers::Scalar<T>> for $unit<T>
         where
             T: core::ops::Mul<T, Output = T>,
         {
             type Output = Self;
 
-            fn mul(self, rhs: crate::Scalar<T>) -> Self {
+            fn mul(self, rhs: unitopia_helpers::Scalar<T>) -> Self {
                 Self {
                     inner: core::ops::Mul::mul(self.inner, rhs.inner),
                 }
             }
         }
 
-        impl<T> core::ops::Div<crate::Scalar<T>> for $unit<T>
+        impl<T> core::ops::Div<unitopia_helpers::Scalar<T>> for $unit<T>
         where
             T: core::ops::Div<T, Output = T>,
         {
             type Output = Self;
 
-            fn div(self, rhs: crate::Scalar<T>) -> Self {
+            fn div(self, rhs: unitopia_helpers::Scalar<T>) -> Self {
                 Self {
                     inner: core::ops::Div::div(self.inner, rhs.inner),
                 }
@@ -179,22 +193,10 @@ macro_rules! impl_unit_pow_traits {
     };
 }
 
-macro_rules! impl_strict_wrapper_unit_ops {
-    ($unit:ident) => {
-        unitopia_helpers::impl_wrapper_identity_traits!($unit);
-        unitopia_helpers::impl_wrapper_add_sub_traits!($unit);
-        impl_unit_scalar_mul_div_traits!($unit);
-        impl_unit_mul_div_measure_traits!($unit);
-        impl_unit_mul_add_traits!($unit);
-        impl_unit_pow_traits!($unit);
-    };
-}
-
 macro_rules! define_strict_wrapper_units {
     ($($name:ident),+ $(,)?) => {
         $(
             define_strict_wrapper_unit!($name);
-            impl_strict_wrapper_unit_ops!($name);
         )+
     };
 }
@@ -204,5 +206,3 @@ define_strict_wrapper_units!(Ampere, Candela, GalactosidaseActivityUnit, Kelvin,
 pub type Area<Value> = unitopia_open_wrapper_arith_outputs::Prod<Meter<Value>, Meter<Value>, Value>;
 pub type Newton<Value> = unitopia_open_wrapper_arith_outputs::Quot<unitopia_open_wrapper_arith_outputs::Prod<Kilogram<Value>, Meter<Value>, Value>, unitopia_open_wrapper_arith_outputs::Prod<Second<Value>, Second<Value>, Value>, Value>;
 pub type Volt<Value> = unitopia_open_wrapper_arith_outputs::Quot<unitopia_open_wrapper_arith_outputs::Prod<Newton<Value>, Meter<Value>, Value>, Ampere<Value>, Value>;
-
-pub use unitopia_helpers::Scalar;
