@@ -13,7 +13,7 @@ pub trait UnitValue {
 
 #[macro_export]
 macro_rules! define_strict_wrapper_unit {
-    ($name:ident, $unit_marker:path) => {
+    ($name:ident) => {
         unitopia_helpers::define_strict_wrapper_struct!(
             #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
             #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
@@ -405,23 +405,23 @@ macro_rules! impl_strict_wrapper_unit_ops {
     };
 }
 
-define_strict_wrapper_unit!(Ampere, unitopia_marker_units::Ampere);
+define_strict_wrapper_unit!(Ampere);
 impl_strict_wrapper_unit_ops!(Ampere);
-define_strict_wrapper_unit!(Candela, unitopia_marker_units::Candela);
+define_strict_wrapper_unit!(Candela);
 impl_strict_wrapper_unit_ops!(Candela);
-define_strict_wrapper_unit!(GalactosidaseActivityUnit, unitopia_marker_units::GalactosidaseActivityUnit);
+define_strict_wrapper_unit!(GalactosidaseActivityUnit);
 impl_strict_wrapper_unit_ops!(GalactosidaseActivityUnit);
-define_strict_wrapper_unit!(Kelvin, unitopia_marker_units::Kelvin);
+define_strict_wrapper_unit!(Kelvin);
 impl_strict_wrapper_unit_ops!(Kelvin);
-define_strict_wrapper_unit!(Kilogram, unitopia_marker_units::Kilogram);
+define_strict_wrapper_unit!(Kilogram);
 impl_strict_wrapper_unit_ops!(Kilogram);
-define_strict_wrapper_unit!(Meter, unitopia_marker_units::Meter);
+define_strict_wrapper_unit!(Meter);
 impl_strict_wrapper_unit_ops!(Meter);
-define_strict_wrapper_unit!(Mole, unitopia_marker_units::Mole);
+define_strict_wrapper_unit!(Mole);
 impl_strict_wrapper_unit_ops!(Mole);
-define_strict_wrapper_unit!(PowerOfHydrogen, unitopia_marker_units::PowerOfHydrogen);
+define_strict_wrapper_unit!(PowerOfHydrogen);
 impl_strict_wrapper_unit_ops!(PowerOfHydrogen);
-define_strict_wrapper_unit!(Second, unitopia_marker_units::Second);
+define_strict_wrapper_unit!(Second);
 impl_strict_wrapper_unit_ops!(Second);
 
 pub type Area<Value> = unitopia_open_wrapper_arith_outputs::Prod<Meter<Value>, Meter<Value>, Value>;
