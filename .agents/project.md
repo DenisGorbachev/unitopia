@@ -52,10 +52,8 @@ Requirements:
     * Needed to implement `Mul`, `Div`, `MulAdd` in a generic way while satisfying Rust coherence rules
 * Must export a `Scale` trait:
   * Requirements:
-    * Must have a `const NUM: usize; // numerator`
-    * Must have a `const DEN: usize; // denominator`
-  * Notes:
-    * This trait was called `PrefixScale` in the previous version
+    * Must have a `const NUM: u128; // numerator`
+    * Must have a `const DEN: u128; // denominator`
 
 ## `unitopia-marker-units`
 
@@ -79,7 +77,7 @@ Requirements:
 
 ## `unitopia-open-wrapper-arith-outputs`
 
-A [`unitopia`](#unitopia) member package that exports the following [marker structs](#marker-struct):
+A [`unitopia`](#unitopia) member package that exports the following [SOWS](#strict-open-wrapper-struct)
 
 * `Prod<A, B, T>`
 * `Quot<A, B, T>`
@@ -238,6 +236,11 @@ Open questions:
     * CMS: Represent them as a separate type
     * CMBU: Represent them as a base unit type, but use a [rational type](#rational-type) for the value (put the scale in the value)
     * CMTT: Represent them as type that encodes the scale information in the type itself using `typenum` (see example: src/drafts/scale.rs)
+* How to convert between values of the same unit but different prefix?
+  * Examples
+    * `Second<Milli<u32>>` and `Second<Atto<f64>>`
+  * Ideas:
+    * Require the user to perform this conversion
 
 Notes:
 
@@ -345,6 +348,7 @@ Examples:
 Notes:
 
 * A prefix may be a part of a base unit name (e.g. kilogram)
+* Some prefixes have numerators or denominators that only fit in `u128`
 
 ## SI prefix
 
@@ -500,22 +504,22 @@ Requirements:
 * Must define all prefixes in src/prefixes.rs (not separate files)
 * Must contain the following tests:
   * `mul_quetta_scalar_is_quetta`
-  * `add_quetta_ronto_is_ronto` (use the same unit)
+  * `add_quetta_ronto_is_ronto`
     * Must construct `q` as 1 quettameter from `1usize`.
     * Must construct `r` as 1 rontometer from `1usize`.
     * Must `assert!(q > r);`
     * Must calculate `let sum = q + r;`
-    * Must have a type annotation on `sum` that contains the zetta unit
+    * Must have a type annotation on `sum` that contains the ronto unit
     * Must `assert!(sum > q);`
     * Must `assert!(sum > r);`
     * Must calculate `let diff = sum - r;`
-    * Must have a type annotation on `diff` that contains the zetta unit
+    * Must have a type annotation on `diff` that contains the ronto unit
     * Must `assert!(diff < sum);`
     * Must `assert!(diff > r);`
     * Must calculate `(diff_quetta, diff_quetta_remainder)` by converting it to a value with quetta prefix
     * Must `assert!(diff_quetta_remainder.is_zero());`
-    * Must `assert_eq!(diff_quetta, a);`
-  * `mul_quetta_ronto_is_ronto` (use different units)
+    * Must `assert_eq!(diff_quetta, q);`
+  * `mul_quetta_ronto_is_kilo`
 
 ## Marker struct
 
@@ -545,7 +549,8 @@ Requirements:
 
 * Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
 * Must implement `Deref`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
-* Must implement `From<T>`, `Into<T>`
+* Must implement `From<T>`
+* Must not implement `Into<T>` (see B001)
 * Must have a `pub const fn new`
   * Notes:
     * `From::from` can't be used instead of `new` because it is not `const`
@@ -564,6 +569,8 @@ A [wrapper struct](#wrapper-struct) with exactly one generic parameter `T`, exac
 ## Strict open wrapper struct
 
 A [wrapper struct](#wrapper-struct) that is both [open](#open-wrapper-struct) and [strict](#strict-wrapper-struct).
+
+Synonyms: SOWS.
 
 ## Numeric type
 
@@ -604,8 +611,8 @@ Synonyms: PNSOWS
 
 Examples:
 
-* `Atto<T>`
-* `Zetta<T>`
+* `Quetta<T>`
+* `Ronto<T>`
 * `Tetravigesi<T>`
 
 Notes:
@@ -613,8 +620,11 @@ Notes:
 * The examples show only the most significant part of the type definition.
 * Some values of PNSOWS are semantically equal but not syntactically equal
   * Examples
-    * `Atto::ZERO` and `Zetta::ZERO`
+    * `Quetta::ZERO` and `Ronto::ZERO`
     * `Kilo::from(1usize)` and `Uno::from(1000usize)`
+* Most conversions may result in an overflow
+  * Examples:
+    * `Uno::<usize>::opt_from(Kilo::from(usize::MAX))`
 
 ## Unital prefixed numeric strict open wrapper struct
 
