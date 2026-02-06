@@ -485,13 +485,13 @@ Requirements:
     * Must construct `a` as 1 attometer from `1usize`.
     * Must construct `b` as 1 zettameter from `1usize`.
     * Must `assert!(a > b);`
+    * Must `assert!(a + b != b * 2); // guard against incorrect impl`
     * Must calculate `let sum = a + b;`
-    * Must assert that the sum has the zetta prefix and preserves physical value.
-      * Must not treat prefix labels as value-neutral (e.g. `1 attometer + 1 zettameter != 2 zettameters`).
+    * Must have a type annotation on `sum` that contains the zetta unit
     * Must `assert!(sum > a);`
     * Must `assert!(sum > b);`
     * Must calculate `let diff = sum - b;`
-    * Must assert that `diff` has the zetta prefix
+    * Must have a type annotation on `diff` that contains the zetta unit
     * Must `assert!(diff < sum);`
     * Must `assert!(diff > b);`
     * Must calculate `(diff_atto, diff_atto_remainder)` by converting it to a value with atto prefix
