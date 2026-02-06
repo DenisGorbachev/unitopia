@@ -853,7 +853,7 @@ Requirements:
 A [wrapper struct](#wrapper-struct) with the following properties:
 
 * Must have an `inner` field that is `pub`
-* Must implement `DerefMut` by delegating to the corresponding impl on the `inner` field
+* Must implement `DerefMut`, `BorrowMut` by delegating to the corresponding impl on the `inner` field
 
 ### Strict wrapper struct
 
