@@ -482,6 +482,15 @@ Requirements:
 * Must define all prefixes in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
 * Must contain the following tests:
   * `add_atto_zetta_is_zetta`
+    * Must construct `a` as 1 attometer from `1usize`.
+    * Must construct `b` as 1 zettameter from `1usize`.
+    * Must calculate `let sum = a + b;`
+    * Must assert that the sum has the zetta prefix
+    * Must calculate `let diff = sum - b;`
+    * Must assert that `diff` has the zetta prefix
+    * Must calculate `(diff_atto, diff_atto_remainder)` by converting it to a value with atto prefix
+    * Must `assert!(diff_atto_remainder.is_zero());`
+    * Must `assert_eq!(diff_atto, a);`
   * `mul_atto_scalar_is_atto`
   * `mul_atto_zetta_is_zetta` (use different units)
 
