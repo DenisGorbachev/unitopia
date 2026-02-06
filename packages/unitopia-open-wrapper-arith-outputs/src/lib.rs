@@ -1,22 +1,18 @@
 use core::marker::PhantomData;
 
-#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
-pub struct Prod<A, B, T> {
-    pub inner: T,
-    unit: PhantomData<(A, B)>,
+macro_rules! define_open_wrapper_arith_output {
+    ($name:ident<$lhs:ident, $rhs:ident>) => {
+        #[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
+        pub struct $name<$lhs, $rhs, T> {
+            pub inner: T,
+            unit: PhantomData<($lhs, $rhs)>,
+        }
+    };
 }
 
-#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
-pub struct Quot<A, B, T> {
-    pub inner: T,
-    unit: PhantomData<(A, B)>,
-}
-
-#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
-pub struct Powr<A, N, T> {
-    pub inner: T,
-    unit: PhantomData<(A, N)>,
-}
+define_open_wrapper_arith_output!(Prod<A, B>);
+define_open_wrapper_arith_output!(Quot<A, B>);
+define_open_wrapper_arith_output!(Powr<A, N>);
 
 macro_rules! impl_open_wrapper_arith_output {
     ($name:ident) => {

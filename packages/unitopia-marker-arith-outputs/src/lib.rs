@@ -1,10 +1,12 @@
 use core::marker::PhantomData;
 
-#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
-pub struct Prod<A, B>(PhantomData<(A, B)>);
+macro_rules! define_marker_arith_output {
+    ($name:ident<$lhs:ident, $rhs:ident>) => {
+        #[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
+        pub struct $name<$lhs, $rhs>(PhantomData<($lhs, $rhs)>);
+    };
+}
 
-#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
-pub struct Quot<A, B>(PhantomData<(A, B)>);
-
-#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
-pub struct Powr<A, N>(PhantomData<(A, N)>);
+define_marker_arith_output!(Prod<A, B>);
+define_marker_arith_output!(Quot<A, B>);
+define_marker_arith_output!(Powr<A, N>);
