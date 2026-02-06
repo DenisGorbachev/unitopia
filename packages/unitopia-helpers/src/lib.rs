@@ -20,6 +20,14 @@ macro_rules! define_strict_wrapper_struct {
             pub inner: T,
         }
 
+        impl<T> $name<T> {
+            pub const fn new(inner: T) -> Self {
+                Self {
+                    inner
+                }
+            }
+        }
+
         impl<T> core::ops::Deref for $name<T>
         where
             T: core::ops::Deref,

@@ -12,6 +12,12 @@ pub struct Quot<A, B, T> {
     unit: PhantomData<(A, B)>,
 }
 
+#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
+pub struct Powr<A, N, T> {
+    pub inner: T,
+    unit: PhantomData<(A, N)>,
+}
+
 macro_rules! impl_open_wrapper_arith_output {
     ($name:ident) => {
         impl<A, B, T> core::ops::Deref for $name<A, B, T>
@@ -62,6 +68,7 @@ macro_rules! impl_open_wrapper_arith_output {
 
 impl_open_wrapper_arith_output!(Prod);
 impl_open_wrapper_arith_output!(Quot);
+impl_open_wrapper_arith_output!(Powr);
 
 impl<A, B, C, D, LhsValue, RhsValue, OutValue> core::ops::Div<Prod<C, D, RhsValue>> for Prod<A, B, LhsValue>
 where

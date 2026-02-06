@@ -1,4 +1,4 @@
-use crate::{Exponent, PowUnit, Prod, Quot};
+use crate::{Exponent, Powr, Prod, Quot};
 use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use num_traits::ops::overflowing::{OverflowingAdd, OverflowingSub};
@@ -262,10 +262,10 @@ impl<Unit, Value, const POWER: u32> Pow<Exponent<POWER>> for Measure<Unit, Value
 where
     Value: Pow<u32, Output = Value>,
 {
-    type Output = Measure<PowUnit<Unit, POWER>, Value>;
+    type Output = Measure<Powr<Unit, Exponent<POWER>>, Value>;
 
     fn pow(self, _rhs: Exponent<POWER>) -> Self::Output {
-        Measure::<PowUnit<Unit, POWER>, Value>::new_const(self.value.pow(POWER))
+        Measure::<Powr<Unit, Exponent<POWER>>, Value>::new_const(self.value.pow(POWER))
     }
 }
 

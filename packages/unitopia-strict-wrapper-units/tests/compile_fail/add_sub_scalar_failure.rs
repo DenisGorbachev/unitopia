@@ -1,6 +1,6 @@
-use unitopia_strict_wrapper_units::{Meter, StrictWrapperUnit};
+use unitopia_strict_wrapper_units::Meter;
 
 fn main() {
-    let value = Meter::from_value(1u32);
+    let value = Meter::new(1u32);
     let _ = value + 1u32;
 }

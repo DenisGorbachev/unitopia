@@ -1,28 +1,10 @@
-pub trait StrictWrapperUnit {
-    type Unit;
+pub trait UnitValue {
     type Value;
 
     fn from_value(value: Self::Value) -> Self;
     fn value_ref(&self) -> &Self::Value;
     fn value_mut(&mut self) -> &mut Self::Value;
     fn into_value(self) -> Self::Value;
-}
-
-pub trait UnitValue {
-    type Value;
-
-    fn into_value(self) -> Self::Value;
-}
-
-impl<T> UnitValue for T
-where
-    T: StrictWrapperUnit,
-{
-    type Value = <T as StrictWrapperUnit>::Value;
-
-    fn into_value(self) -> Self::Value {
-        <T as StrictWrapperUnit>::into_value(self)
-    }
 }
 
 #[macro_export]
@@ -35,8 +17,7 @@ macro_rules! define_strict_wrapper_unit {
             $name
         );
 
-        impl<T> $crate::StrictWrapperUnit for $name<T> {
-            type Unit = $unit_marker;
+        impl<T> $crate::UnitValue for $name<T> {
             type Value = T;
 
             fn from_value(value: Self::Value) -> Self {
@@ -400,10 +381,10 @@ macro_rules! impl_unit_pow_traits {
         where
             T: num_traits::Pow<u32, Output = T>,
         {
-            type Output = unitopia_measure::Measure<unitopia_measure::PowUnit<<Self as crate::StrictWrapperUnit>::Unit, POWER>, T>;
+            type Output = unitopia_open_wrapper_arith_outputs::Powr<$unit<T>, unitopia_measure::Exponent<POWER>, T>;
 
             fn pow(self, _rhs: unitopia_measure::Exponent<POWER>) -> Self::Output {
-                unitopia_measure::Measure::new_const(<T as num_traits::Pow<u32>>::pow(self.inner, POWER))
+                unitopia_open_wrapper_arith_outputs::Powr::from(<T as num_traits::Pow<u32>>::pow(self.inner, POWER))
             }
         }
     };
@@ -442,4 +423,5 @@ impl_strict_wrapper_unit_ops!(Second);
 pub type Area<Value> = unitopia_open_wrapper_arith_outputs::Prod<Meter<Value>, Meter<Value>, Value>;
 pub type Newton<Value> = unitopia_open_wrapper_arith_outputs::Quot<unitopia_open_wrapper_arith_outputs::Prod<Kilogram<Value>, Meter<Value>, Value>, unitopia_open_wrapper_arith_outputs::Prod<Second<Value>, Second<Value>, Value>, Value>;
 pub type Volt<Value> = unitopia_open_wrapper_arith_outputs::Quot<unitopia_open_wrapper_arith_outputs::Prod<Newton<Value>, Meter<Value>, Value>, Ampere<Value>, Value>;
+
 pub use unitopia_helpers::Scalar;

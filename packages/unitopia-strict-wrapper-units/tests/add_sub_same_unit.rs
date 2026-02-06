@@ -1,12 +1,12 @@
-use unitopia_strict_wrapper_units::{Meter, StrictWrapperUnit};
+use unitopia_strict_wrapper_units::Meter;
 
 #[test]
 fn add_sub_same_unit() {
-    let lhs = Meter::from_value(10u32);
-    let rhs = Meter::from_value(4u32);
+    let lhs = Meter::new(10u32);
+    let rhs = Meter::new(4u32);
     let sum = lhs + rhs;
-    assert_eq!(*sum.value_ref(), 14);
+    assert_eq!(sum.inner, 14);
 
-    let diff = sum - Meter::from_value(6u32);
-    assert_eq!(*diff.value_ref(), 8);
+    let diff = sum - Meter::new(6u32);
+    assert_eq!(diff.inner, 8);
 }

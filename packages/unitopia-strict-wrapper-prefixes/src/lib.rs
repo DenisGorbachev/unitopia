@@ -6,29 +6,28 @@ macro_rules! define_strict_wrapper_prefix {
             #[cfg_attr(feature = "bitcode", derive(bitcode::Encode, bitcode::Decode))]
             $name
         );
-        impl<T> unitopia_strict_wrapper_units::StrictWrapperUnit for $name<T>
+        impl<T> unitopia_strict_wrapper_units::UnitValue for $name<T>
         where
-            T: unitopia_strict_wrapper_units::StrictWrapperUnit,
+            T: unitopia_strict_wrapper_units::UnitValue,
         {
-            type Unit = <T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Unit;
-            type Value = <T as unitopia_strict_wrapper_units::StrictWrapperUnit>::Value;
+            type Value = <T as unitopia_strict_wrapper_units::UnitValue>::Value;
 
             fn from_value(value: Self::Value) -> Self {
                 Self {
-                    inner: <T as unitopia_strict_wrapper_units::StrictWrapperUnit>::from_value(value),
+                    inner: <T as unitopia_strict_wrapper_units::UnitValue>::from_value(value),
                 }
             }
 
             fn value_ref(&self) -> &Self::Value {
-                <T as unitopia_strict_wrapper_units::StrictWrapperUnit>::value_ref(&self.inner)
+                <T as unitopia_strict_wrapper_units::UnitValue>::value_ref(&self.inner)
             }
 
             fn value_mut(&mut self) -> &mut Self::Value {
-                <T as unitopia_strict_wrapper_units::StrictWrapperUnit>::value_mut(&mut self.inner)
+                <T as unitopia_strict_wrapper_units::UnitValue>::value_mut(&mut self.inner)
             }
 
             fn into_value(self) -> Self::Value {
-                <T as unitopia_strict_wrapper_units::StrictWrapperUnit>::into_value(self.inner)
+                <T as unitopia_strict_wrapper_units::UnitValue>::into_value(self.inner)
             }
         }
         #[cfg(feature = "wincode")]
@@ -276,7 +275,7 @@ macro_rules! impl_prefix_mul_div_unit_traits {
     ($prefix:ident) => {
         impl<T, Rhs> core::ops::Mul<Rhs> for $prefix<T>
         where
-            Rhs: unitopia_strict_wrapper_units::StrictWrapperUnit,
+            Rhs: unitopia_strict_wrapper_units::UnitValue,
             T: core::ops::Mul<Rhs>,
         {
             type Output = <T as core::ops::Mul<Rhs>>::Output;
@@ -288,7 +287,7 @@ macro_rules! impl_prefix_mul_div_unit_traits {
 
         impl<T, Rhs> core::ops::Div<Rhs> for $prefix<T>
         where
-            Rhs: unitopia_strict_wrapper_units::StrictWrapperUnit,
+            Rhs: unitopia_strict_wrapper_units::UnitValue,
             T: core::ops::Div<Rhs>,
         {
             type Output = <T as core::ops::Div<Rhs>>::Output;
@@ -304,7 +303,7 @@ macro_rules! impl_prefix_mul_add_traits {
     ($prefix:ident) => {
         impl<T, Rhs, OutValue> num_traits::MulAdd<Rhs, unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>> for $prefix<T>
         where
-            T: unitopia_strict_wrapper_units::StrictWrapperUnit,
+            T: unitopia_strict_wrapper_units::UnitValue,
             T: num_traits::MulAdd<Rhs, unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>, Output = unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>>,
         {
             type Output = unitopia_open_wrapper_arith_outputs::Prod<T, Rhs, OutValue>;
@@ -316,7 +315,7 @@ macro_rules! impl_prefix_mul_add_traits {
 
         impl<T, Scalar> num_traits::MulAdd<Scalar, Self> for $prefix<T>
         where
-            T: unitopia_strict_wrapper_units::StrictWrapperUnit,
+            T: unitopia_strict_wrapper_units::UnitValue,
             T: num_traits::MulAdd<Scalar, T, Output = T>,
         {
             type Output = Self;
@@ -330,7 +329,7 @@ macro_rules! impl_prefix_mul_add_traits {
 
         impl<T, Scalar> num_traits::MulAddAssign<Scalar, Self> for $prefix<T>
         where
-            T: unitopia_strict_wrapper_units::StrictWrapperUnit,
+            T: unitopia_strict_wrapper_units::UnitValue,
             T: num_traits::MulAddAssign<Scalar, T>,
         {
             fn mul_add_assign(&mut self, a: Scalar, b: Self) {
