@@ -846,7 +846,10 @@ Requirements:
 
 * Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
 * Must implement `Deref`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
-* Must implement `From<T>`
+* Must implement `From<T>`, `Into<T>`
+* Must have a `pub const fn new`
+  * Notes:
+    * `From::from` can't be used instead of `new` because it is not `const`
 
 ### Open wrapper struct
 
