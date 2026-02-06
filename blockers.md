@@ -1,4 +1,3 @@
-- B001: Generic wrapper structs cannot implement `Into<T>` for their inner type without conflicting with `core`'s blanket `Into` impl (`impl<T, U> Into<U> for T where U: From<T>`), and `From<Wrapper<T>> for T` is also forbidden by orphan/coherence rules. Workarounds: 
-  - Use an inherent conversion method (for example, `into_inner(self) -> T`) on generic wrappers.
-  - Keep `From<T> for Wrapper<T>` and use the blanket `Into<Wrapper<T>> for T` for the construction direction.
-  - If needed, implement `Into<Inner>` only for non-generic concrete wrapper types where coherence allows it.
+- B002: The exact assertion form `assert!(a + b != b * 2)` cannot be compiled with the current generic trait architecture without overlapping `Mul` impls (`Mul<Scalar>` vs generic `Mul<Rhs: UnitValue>`) under Rust coherence rules. Workarounds:
+  - Use an equivalent guard that computes `b * 2` via `MulAssign` in two steps (`let mut b_times_two = b; b_times_two *= 2;`) and compare against `a + b`.
+  - Redesign multiplication traits to separate scalar-vs-unit RHS at the type level (for example, via dedicated scalar wrapper types in callsites).

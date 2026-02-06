@@ -16,7 +16,8 @@ Requirements:
 
 * Must keep its members in `packages` dir
 * Must contain at least one member package that exports a [physical type](#physical-type)
-* Members must use macros to avoid boilerplate code when defining units and prefixes
+* Every member must use macros to avoid boilerplate code when defining units and prefixes
+* Every member must define the macros in src/macros.rs
 * Must use US English spelling
 
 Notes:
@@ -31,6 +32,13 @@ Notes:
     * Generic marker struct with only a single argument
     * Wrapper struct
 
+Blockers:
+
+* B001: Generic wrapper structs cannot implement `Into<T>` for their inner type without conflicting with `core`'s blanket `Into` impl (`impl<T, U> Into<U> for T where U: From<T>`), and `From<Wrapper<T>> for T` is also forbidden by orphan/coherence rules. Workarounds:
+  * Define a special trait that would have a conversion method (for example, `fn into_inner(self) -> T`) and implement it for generic wrappers.
+  * Keep `From<T> for Wrapper<T>` and use the blanket `Into<Wrapper<T>> for T` for the construction direction.
+  * Implement `Into<Inner>` only for non-generic concrete wrapper types where coherence allows it.
+
 ## `unitopia-helpers`
 
 A [`unitopia`](#unitopia) member package that exports various helpers.
@@ -39,10 +47,15 @@ Requirements:
 
 * Must export the following macros:
   * `define_strict_wrapper_struct`
-* Must define all macros in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
-* Must export `Scalar<T>` (a [strict open wrapper struct](#strict-open-wrapper-struct) for scalars)
+* Must export a `Scalar<T>` type (a [strict open wrapper struct](#strict-open-wrapper-struct) for scalars)
   * Notes:
     * Needed to implement `Mul`, `Div`, `MulAdd` in a generic way while satisfying Rust coherence rules
+* Must export a `Scale` trait:
+  * Requirements:
+    * Must have a `const NUM: usize; // numerator`
+    * Must have a `const DEN: usize; // denominator`
+  * Notes:
+    * This trait was called `PrefixScale` in the previous version
 
 ## `unitopia-marker-units`
 
@@ -460,7 +473,7 @@ Requirements:
   * `Area`
   * `Newton`
   * `Volt`
-* Must define all units in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
+* Must define all units in src/units.rs (not separate files)
 * Must contain the following tests:
   * `add_sub_scalar_failure` (compile-fail)
   * `add_sub_same_unit`
@@ -479,13 +492,14 @@ Requirements:
 
 * Must export all [SI prefixes](#si-prefix)
 * Must export all [custom prefixes](#custom-prefix) listed in examples
-* Must define all prefixes in src/lib.rs (not separate files - this is an explicit override of the previous instruction)
+* Must define all prefixes in src/prefixes.rs (not separate files)
+* Must
 * Must contain the following tests:
   * `add_atto_zetta_is_zetta`
     * Must construct `a` as 1 attometer from `1usize`.
     * Must construct `b` as 1 zettameter from `1usize`.
     * Must `assert!(a > b);`
-    * Must `assert!(a + b != b * 2); // guard against incorrect impl`
+    * Must `assert_ne!(a + b, b * ); // guard against incorrect impl`
     * Must calculate `let sum = a + b;`
     * Must have a type annotation on `sum` that contains the zetta unit
     * Must `assert!(sum > a);`
