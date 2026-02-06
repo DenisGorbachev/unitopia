@@ -1,3 +1,7 @@
+/// This trait is required to distinguish between units and scalars
+/// [`Mul`](core::ops::Mul) impl whose rhs is a unit must have a `type Output` whose outer type is `Prod`
+/// [`Mul`](core::ops::Mul) impl whose rhs is a scalar must have a `type Output = Self`
+/// The `Rhs` generic arg must be bound by [`UnitValue`], otherwise the impls above will conflict
 pub trait UnitValue {
     type Value;
 
