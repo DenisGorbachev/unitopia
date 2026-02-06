@@ -679,9 +679,12 @@ Examples:
 
 * Kilo (1000 / 1)
 * Giga (1000000000 / 1)
+* Uno (1 / 1)
 * Micro (1 / 1000000)
 * Hexagesi (60 / 1)
 * Tetravigesi (24 / 1)
+* Quetta (10 ^ 30 / 1)
+* Ronto (10 ^ -27 / 1)
 
 Notes:
 
@@ -778,9 +781,11 @@ A trait from the following list:
 
 * `core::ops::Mul`
 * `core::ops::Div`
+* `core::ops::Rem`
 * `num_traits::Pow` (note: the exponent must be scalar)
 * `num_traits::CheckedMul`
 * `num_traits::CheckedDiv`
+* `num_traits::CheckedRem`
 * `num_traits::SaturatingMul`
 * `num_traits::WrappingMul`
 * `num_traits::OverflowingMul`
@@ -837,26 +842,24 @@ Requirements:
 * Must export all [SI prefixes](#si-prefix)
 * Must export all [custom prefixes](#custom-prefix) listed in examples
 * Must define all prefixes in src/prefixes.rs (not separate files)
-* Must
 * Must contain the following tests:
-  * `add_atto_zetta_is_zetta`
-    * Must construct `a` as 1 attometer from `1usize`.
-    * Must construct `b` as 1 zettameter from `1usize`.
-    * Must `assert!(a > b);`
-    * Must `assert_ne!(a + b, b * ); // guard against incorrect impl`
-    * Must calculate `let sum = a + b;`
+  * `mul_quetta_scalar_is_quetta`
+  * `add_quetta_ronto_is_ronto` (use the same unit)
+    * Must construct `q` as 1 quettameter from `1usize`.
+    * Must construct `r` as 1 rontometer from `1usize`.
+    * Must `assert!(q > r);`
+    * Must calculate `let sum = q + r;`
     * Must have a type annotation on `sum` that contains the zetta unit
-    * Must `assert!(sum > a);`
-    * Must `assert!(sum > b);`
-    * Must calculate `let diff = sum - b;`
+    * Must `assert!(sum > q);`
+    * Must `assert!(sum > r);`
+    * Must calculate `let diff = sum - r;`
     * Must have a type annotation on `diff` that contains the zetta unit
     * Must `assert!(diff < sum);`
-    * Must `assert!(diff > b);`
-    * Must calculate `(diff_atto, diff_atto_remainder)` by converting it to a value with atto prefix
-    * Must `assert!(diff_atto_remainder.is_zero());`
-    * Must `assert_eq!(diff_atto, a);`
-  * `mul_atto_scalar_is_atto`
-  * `mul_atto_zetta_is_zetta` (use different units)
+    * Must `assert!(diff > r);`
+    * Must calculate `(diff_quetta, diff_quetta_remainder)` by converting it to a value with quetta prefix
+    * Must `assert!(diff_quetta_remainder.is_zero());`
+    * Must `assert_eq!(diff_quetta, a);`
+  * `mul_quetta_ronto_is_ronto` (use different units)
 
 ### Marker struct
 
@@ -905,6 +908,72 @@ A [wrapper struct](#wrapper-struct) with exactly one generic parameter `T`, exac
 ### Strict open wrapper struct
 
 A [wrapper struct](#wrapper-struct) that is both [open](#open-wrapper-struct) and [strict](#strict-wrapper-struct).
+
+### Numeric type
+
+A type that implements `num_traits::NumAssignRef`.
+
+Examples:
+
+* `i8`
+* `u32`
+* `usize`
+* `f64`
+* `rust_decimal::Decimal`
+* `num::rational::Ratio`
+
+Notes:
+
+* `num_traits::NumAssignRef` is implemented automatically for types that implement its supertraits.
+
+### Numeric type conditional on T
+
+A type that is [numeric](#numeric-type) if T is [numeric](#numeric-type).
+
+### Numeric strict open wrapper struct
+
+A [strict open wrapper struct](#strict-open-wrapper-struct) that is [numeric type conditional on T](#numeric-type-conditional-on-t) (where `T` is the generic parameter of the wrapper).
+
+Synonyms: NSOWS
+
+Requirements:
+
+* Must conditionally implement `num_traits::NumAssignRef` (this is a consequence of this type being numeric)
+
+### Prefixed numeric strict open wrapper struct
+
+A [NSOWS](#numeric-strict-open-wrapper-struct) whose name is a [prefix](#prefix).
+
+Synonyms: PNSOWS
+
+Examples:
+
+* `Atto<T>`
+* `Zetta<T>`
+* `Tetravigesi<T>`
+
+Notes:
+
+* The examples show only the most significant part of the type definition.
+* Some values of PNSOWS are semantically equal but not syntactically equal
+  * Examples
+    * `Atto::ZERO` and `Zetta::ZERO`
+    * `Kilo::from(1usize)` and `Uno::from(1000usize)`
+
+### Unital prefixed numeric strict open wrapper struct
+
+A [NSOWS](#numeric-strict-open-wrapper-struct) whose name is a [unit](#unit) and whose `T` is an [PNSOWS](#prefixed-numeric-strict-open-wrapper-struct).
+
+Synonyms: UPNSOWS
+
+Examples:
+
+* `Second<T>`
+* `Newton<T>`
+
+Notes:
+
+* The examples show only the most significant part of the type definition.
 
 ### Arith output
 
