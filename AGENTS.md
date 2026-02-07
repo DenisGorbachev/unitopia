@@ -35,12 +35,16 @@ You are a senior Rust software architect. You write high-quality, production-rea
 ### Review workflow
 
 * Output a full list of issues (not a shortlist)
-* Every issue in the full list must be formatted as `{number}. [{severity}] {description} ({references})` (I will identify the issues by number in my answer)
+* Every issue in the full list must be formatted as `{number}. [{severity}] {description} ({references}). Proposed fixes: {fixes}` (I will identify the issues by number in my answer)
   * `severity` must be one of `High`, `Medium`, `Low`.
   * `references` must be a comma-separated list of `reference`
   * `reference` must must be formatted as `{path}:{line}`
   * `path` must be a file path relative to your working directory
   * `line` must be the first line of the relevant code or text block
+  * `fixes` must be one of the following:
+    * If there is at least one proposed fix:
+      * Then: a child list of fixes where each fix must have a format `{number}. {description}` (the numbers should start from 1 for each list of fixes)
+      * Else: a string "none."
 * If there are no issues, then start your reply with "No issues found"
 
 ### Commands
@@ -366,15 +370,26 @@ Requirements:
 
 Notes:
 
-* Design choices:
-  * Kind
-    * Unit
-    * Prefix
-  * Archetype
-    * Value
-    * Vanilla marker struct
-    * Generic marker struct with only a single argument
-    * Wrapper struct
+* The adjective "unital" indicates that a corresponding noun is related to a [unit](#unit).
+
+Design choices:
+
+* Kind
+  * Unit
+  * Prefix
+* Archetype
+  * Value
+  * Vanilla marker struct
+  * Generic marker struct with only a single argument
+  * Wrapper struct
+
+Constants:
+
+| Name      | Value                                                         | Notes                                       |
+|-----------|---------------------------------------------------------------|:--------------------------------------------|
+| u128::MAX | 340282366920938463463374607431768211455                       |                                             |
+| 10^38     | 100000000000000000000000000000000000000                       | Max conversion factor representable by u128 |
+| 10^60     | 1000000000000000000000000000000000000000000000000000000000000 | Max conversion factor (quetta to quecto)    |
 
 Blockers:
 
@@ -421,7 +436,7 @@ Requirements:
 
 ### `unitopia-open-wrapper-arith-outputs`
 
-A [`unitopia`](#unitopia) member package that exports the following [SOWS](#strict-open-wrapper-struct)
+A [`unitopia`](#unitopia) member package that exports the following [OWS](#open-wrapper-struct)
 
 * `Prod<A, B, T>`
 * `Quot<A, B, T>`
@@ -539,22 +554,22 @@ Open questions:
     * DUS: Represent them as separate types
     * DUTNP: Represent them as tuples of nested pairs where the first element is the [base unit](#base-unit) and the second element is the power
       * Examples
-        * `pub type Newton = ((Kilogram, 1), (Meter, 1), (Second, -2));`
+        * `pub type Newton = ((Kilogram, P1), (Meter, P1), (Second, N2));`
       * Properties:
         * Semantically same are syntactically same: No
           * Counterexamples:
-            * `pub type Newton2 = ((Meter, 1), (Kilogram, 1), (Second, -2));`
+            * `pub type Newton2 = ((Meter, P1), (Kilogram, P1), (Second, N2));`
           * Notes:
             * This can be mitigated by convention:
               * Document a specific order of units as canonical
               * Implement arithmetic traits in a way that `type Output` has a canonical order of units
     * DUTFP: Represent them as tuples of flattened pairs where the first element is the [base unit](#base-unit) and the second element is the power
       * Examples:
-        * `pub type Newton = (Kilogram, 1, Meter, 1, Second, -2);`
+        * `pub type Newton = (Kilogram, P1, Meter, P1, Second, N2);`
       * Pros:
         * Less code
       * Cons: (I don't see any, but it puts the units and powers on the same level, so maybe some cons will be discovered during implementation)
-    * DUIM: Represent them as specifications of `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, 1, Meter, 1>, Mul<Second, 1, Second, 1>, 1, -1>;`)
+    * DUIM: Represent them as specifications of `Mul` type only (represent `Div` as `Mul` with negative power) (e.g. `type Newton = Mul<Mul<Kilogram, P1, Meter, P1>, Mul<Second, P1, Second, P1>, P1, N1>;`)
       * Superseded by DUTNP and DUTFP
     * DUIMD: Represent them as specifications of `Mul` or `Div` generic types
       * Examples:
@@ -569,6 +584,8 @@ Open questions:
             * Switch to runtime check
             * Represent all units in a system with a single type whose generic parameters are unit powers
               * May use `typenum` crate
+    * Notes:
+      * The examples use types from `typenum`
 * How to represent alternative units that are a constant multiple of base units?
   * Examples:
     * Minute is 60 \* Second
@@ -579,7 +596,7 @@ Open questions:
   * Ideas:
     * CMS: Represent them as a separate type
     * CMBU: Represent them as a base unit type, but use a [rational type](#rational-type) for the value (put the scale in the value)
-    * CMTT: Represent them as type that encodes the scale information in the type itself using `typenum` (see example: src/drafts/scale.rs)
+    * CMTT: Represent them as type that encodes the scale information in the type itself using `typenum` (see example: packages/unitopia-draft-scale/src/scale.rs)
 * How to convert between values of the same unit but different prefix?
   * Examples
     * `Second<Milli<u32>>` and `Second<Atto<f64>>`
@@ -590,8 +607,10 @@ Notes:
 
 * The ideas are not requirements. If you think that an idea is wrong, tell me about it and don't implement it.
 * Stable Rust 1.85 supports arithmetic in const generics only for constant operands wrapped in braces (e.g. `Foo::<{ 2 + 2 }>::new(42)`)
-* Some units are non-linear (example: pH), so they should not implement conversion by scalar multiple
-  * `unitopia` contains packages with different architectures. If the architecture is specific, such conversion must not be implemented for non-linear units, but if the architecture is generic, then such conversion should be implemented for non-linear units (because it must be implemented for linear units).
+* Some units are non-linear (example: pH)
+  * If a package implements units as distinct types:
+    * Then: it's possible to implement traits selectively, so non-linear units must not implement [scalar multiplication traits](#scalar-multiplication-trait)
+    * Else: it's not possible to implement traits selectively, so non-linear units must implement [scalar multiplication traits](#scalar-multiplication-trait) as a consequence of generic implementations
 
 ### Measure newtype
 
@@ -687,12 +706,14 @@ Examples:
 * Hexagesi (60 / 1)
 * Tetravigesi (24 / 1)
 * Quetta (10 ^ 30 / 1)
-* Ronto (10 ^ -27 / 1)
+* Quecto (1 / 10 ^ 30)
+* Ronto (1 / 10 ^ 27)
 
 Notes:
 
 * A prefix may be a part of a base unit name (e.g. kilogram)
-* Some prefixes have numerators or denominators that only fit in `u128`
+* All SI prefixes have numerators or denominators that fit in `u128`
+  * The conversion may still overflow, so use `Checked` versions of traits
 
 ### SI prefix
 
@@ -713,8 +734,8 @@ An algebraic expression which is a multiplication of a set of variables raised t
 
 Examples:
 
-* m^2 (square meter, unit of area)
-* kg *m* s^-2 (newton, unit of force)
+* `m^2` (square meter, unit of area)
+* `kg * m * s^-2` (newton, unit of force)
 
 Notes:
 
@@ -785,11 +806,8 @@ A trait from the following list:
 
 * `core::ops::Mul`
 * `core::ops::Div`
-* `core::ops::Rem`
-* `num_traits::Pow` (note: the exponent must be scalar)
 * `num_traits::CheckedMul`
 * `num_traits::CheckedDiv`
-* `num_traits::CheckedRem`
 * `num_traits::SaturatingMul`
 * `num_traits::WrappingMul`
 * `num_traits::OverflowingMul`
@@ -800,17 +818,21 @@ Notes:
   * `num_traits::SaturatingDiv`
   * `num_traits::WrappingDiv`
   * `num_traits::OverflowingDiv`
+* Rem traits (`core::ops::Rem` and `num_traits::CheckedRem`) should not be implemented for units because it does not produce a unital value
 
 ### Scalar multiplication trait
 
 A trait that is either [general multiplication trait](#general-multiplication-trait) or a trait from the following list:
 
+* `num_traits::Pow`
+* `core::ops::Rem`
+* `num_traits::CheckedRem`
 * `core::ops::MulAssign`
 * `core::ops::DivAssign`
 
 Notes:
 
-* These traits are scalar-only because their functions return `Self` (normal variants) or `()` (`Assign` variants)
+* `MulAssign` and `DivAssign` are scalar-only because their functions return `()`\_\_
 
 ### Unit package
 
@@ -847,23 +869,23 @@ Requirements:
 * Must export all [custom prefixes](#custom-prefix) listed in examples
 * Must define all prefixes in src/prefixes.rs (not separate files)
 * Must contain the following tests:
-  * `mul_quetta_scalar_is_quetta`
-  * `add_quetta_ronto_is_ronto`
-    * Must construct `q` as 1 quettameter from `1usize`.
-    * Must construct `r` as 1 rontometer from `1usize`.
-    * Must `assert!(q > r);`
-    * Must calculate `let sum = q + r;`
-    * Must have a type annotation on `sum` that contains the ronto unit
-    * Must `assert!(sum > q);`
-    * Must `assert!(sum > r);`
-    * Must calculate `let diff = sum - r;`
-    * Must have a type annotation on `diff` that contains the ronto unit
+  * `mul_giga_scalar_is_giga`
+  * `add_giga_nano_is_nano`
+    * Must construct `large` as 1 gigameter from `1u128`.
+    * Must construct `small` as 1 nanometer from `1u128`.
+    * Must `assert!(large > small);`
+    * Must calculate `let sum = large + small;`
+    * Must have a type annotation on `sum` that contains the nano unit
+    * Must `assert!(sum > large);`
+    * Must `assert!(sum > small);`
+    * Must calculate `let diff = sum - small;`
+    * Must have a type annotation on `diff` that contains the nano unit
     * Must `assert!(diff < sum);`
-    * Must `assert!(diff > r);`
-    * Must calculate `(diff_quetta, diff_quetta_remainder)` by converting it to a value with quetta prefix
-    * Must `assert!(diff_quetta_remainder.is_zero());`
-    * Must `assert_eq!(diff_quetta, q);`
-  * `mul_quetta_ronto_is_kilo`
+    * Must `assert!(diff > small);`
+    * Must calculate `(diff_large, diff_large_remainder)` by converting it to a value with giga prefix
+    * Must `assert!(diff_large_remainder.is_zero());`
+    * Must `assert_eq!(diff_large, large);`
+  * `mul_giga_nano_is_uno`
 
 ### Marker struct
 
@@ -906,9 +928,13 @@ A [wrapper struct](#wrapper-struct) with the following properties:
 * Must have an `inner` field that is `pub`
 * Must implement `DerefMut`, `BorrowMut` by delegating to the corresponding impl on the `inner` field
 
+Synonyms: OWS.
+
 ### Strict wrapper struct
 
 A [wrapper struct](#wrapper-struct) with exactly one generic parameter `T`, exactly one field `inner: T`, zero fields whose outer type is `PhantomData`.
+
+Synonyms: SWS.
 
 ### Strict open wrapper struct
 
