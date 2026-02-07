@@ -20,6 +20,13 @@ Requirements:
 * Every member must define the macros in src/macros.rs
 * Must use US English spelling
 
+Allowances:
+
+* May implement banned traits but must not call their methods and must not use operators that desugar to their methods
+  * Rationale:
+    * Some dependents may prefer to use the banned traits, so we should provide the implementations
+    * The traits are banned because their implementations may panic or silently break the underlying assumptions, so we should not call their methods
+
 Notes:
 
 * The adjective "unital" indicates that a corresponding noun is related to a [unit](#unit).
