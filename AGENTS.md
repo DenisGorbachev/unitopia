@@ -34,9 +34,9 @@ You are a senior Rust software architect. You write high-quality, production-rea
 
 ### Review workflow
 
-* Output a full list of issues (not a shortlist)
-* Every issue in the full list must be formatted as `{number}. [{severity}] {description} ({references}). Proposed fixes: {fixes}` (I will identify the issues by number in my answer)
-  * `severity` must be one of `High`, `Medium`, `Low`.
+* Output a full list of findings (not a shortlist)
+* Every finding in the full list must be formatted as `{number}. [{priority}] {title}. {body} ({references}). Proposed fixes: {fixes}` (I will identify the findings by number in my answer)
+  * `priority` must be one of `P0`, `P1`, `P2`, `P3`.
   * `references` must be a comma-separated list of `reference`
   * `reference` must must be formatted as `{path}:{line}`
   * `path` must be a file path relative to your working directory
@@ -45,7 +45,7 @@ You are a senior Rust software architect. You write high-quality, production-rea
     * If there is at least one proposed fix:
       * Then: newline and a Markdown nested list of fixes where each fix must have a format `{number}. {description}` (the numbers should start from 1 for each list of fixes)
       * Else: the exact text "none."
-* If there are no issues, then start your reply with "No issues found"
+* If there are no findings, then start your reply with "No findings"
 
 ### Commands
 
@@ -152,8 +152,8 @@ You are a senior Rust software architect. You write high-quality, production-rea
 
 ### Arithmetics
 
-* Never use the following operators: `+, +=, -, -=, *, *=, /, /=, %, %=, -, <<, <<=, >>, >>=, [], []=`
-* Never use the following traits: `core::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Rem, RemAssign, Neg, Shl, ShlAssign, Shr, ShrAssign, Index, IndexMut}`
+* Never use the following operators: `+, +=, -, -=, *, *=, /, /=, %, %=, -, <<, <<=, >>, >>=`
+* Never use the following traits: `core::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Rem, RemAssign, Neg, Shl, ShlAssign, Shr, ShrAssign}`
 * Every crate must have a `#![deny(clippy::arithmetic_side_effects)]` attribute
 * Prefer `checked` versions of arithmetic operations
 * Every call to an `overflowing`, `saturating`, `wrapping` version must have a single-line comment above it that starts with "SAFETY: " and describes why calling this version is safe in this specific case
