@@ -18,6 +18,9 @@ Requirements:
 * Must contain at least one member package that exports a [physical type](#physical-type)
 * Every member must use macros to avoid boilerplate code when defining units and prefixes
 * Every member must define the macros in src/macros.rs
+* Every member must have the following crate-level attributes in src/lib.rs:
+  * `#![no_std]`
+  * `#![forbid(unsafe_code)]`
 * Must use US English spelling
 
 Allowances:
@@ -49,6 +52,29 @@ Constants:
 | u128::MAX | 340282366920938463463374607431768211455                       |                                             |
 | 10^38     | 100000000000000000000000000000000000000                       | Max conversion factor representable by u128 |
 | 10^60     | 1000000000000000000000000000000000000000000000000000000000000 | Max conversion factor (quetta to quecto)    |
+
+Prefix conversion notes:
+
+* It is possible but not yet necessary to implement an `fn conversion_succeeds<Src: Scale + Min + Max, Dst: Scale + Min + Max>() -> Option<bool>`:
+  * Return values:
+    * `Some(true)` if it will always succeed
+    * `Some(false)` if it will always fail
+    * `None` if it will succeed or fail depending on the actual values at runtime
+  * Details:
+    * Some conversions will always succeed
+      * Example groups:
+        * Conversions where the source inner type is smaller than the target inner type
+          * Examples:
+            * `Kilo<u32>` into `Kilo<u64>`
+        * Conversions where the source prefix is larger than target prefix but the target inner type is large enough to hold the largest source value
+          * Examples:
+            * `Kilo<u32>` into `Uno<u128>` (`u32::MAX * 10 ^ (3 - 0) < u128::MAX`)
+            * `Kilo<u32>` into `Deci<u128>` (`u32::MAX * 10 ^ (3 - 1) < u128::MAX`)
+            * `Kilo<u32>` into `Kilo<u64>` (`u32::MAX * 10 ^ (3 - 3) < u64::MAX`) (a special case already covered by previous example group)
+    * Some conversions will always fail
+    * Some conversions will succeed or fail depending on the actual values at runtime
+  * Notes:
+    * The min and max values should have `rust_decimal::Decimal` type
 
 Blockers:
 
@@ -178,7 +204,6 @@ Requirements:
   * `serde`
   * `rkyv`
   * `bitcode`
-  * `wincode`
 * Must implement checked, wrapping, overflowing, saturating arithmetic operation traits from `num-traits`
 * Must use methods instead of operators in trait implementations
   * Examples:
@@ -277,6 +302,7 @@ A [physical type](#physical-type) that takes the [unit](#unit) as a generic para
 
 Requirements:
 
+* Must have a `#[repr(transparent)]` attribute.
 * Must support [custom units](#custom-unit).
 
 ## Custom unit
@@ -573,6 +599,7 @@ A struct with at least one generic parameter `T`, exactly one field `inner: T` a
 Requirements:
 
 * Must have a `#[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]` attribute
+* Must have a `#[repr(transparent)]` attribute
 * Must implement `Deref`, `AsRef`, `Borrow` by delegating to the corresponding impl on the `inner` field
 * Must implement `From<T>`
 * Must not implement `Into<T>` (see B001)

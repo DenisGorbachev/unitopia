@@ -10,9 +10,10 @@ members = [
     "packages/unitopia-marker-prefixes",
     "packages/unitopia-marker-units",
     "packages/unitopia-measure",
+    "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
     "packages/unitopia-strict-wrapper-prefixes",
-    "packages/unitopia-strict-wrapper-units",
+    "packages/unitopia-strict-wrapper-units"
 ]
 
 [workspace.package]

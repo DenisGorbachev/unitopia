@@ -1,11 +1,23 @@
+#![deny(clippy::arithmetic_side_effects)]
+
 use core::marker::PhantomData;
 
 macro_rules! define_open_wrapper_arith_output {
     ($name:ident<$lhs:ident, $rhs:ident>) => {
         #[derive(Default, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug)]
+        #[repr(transparent)]
         pub struct $name<$lhs, $rhs, T> {
             pub inner: T,
             unit: PhantomData<($lhs, $rhs)>,
+        }
+
+        impl<$lhs, $rhs, T> $name<$lhs, $rhs, T> {
+            pub const fn new(inner: T) -> Self {
+                Self {
+                    inner,
+                    unit: PhantomData,
+                }
+            }
         }
     };
 }
@@ -47,16 +59,19 @@ macro_rules! impl_open_wrapper_arith_output {
 
         impl<A, B, T> core::borrow::Borrow<T> for $name<A, B, T> {
             fn borrow(&self) -> &T {
-                &self.inner
+                <T as core::borrow::Borrow<T>>::borrow(&self.inner)
+            }
+        }
+
+        impl<A, B, T> core::borrow::BorrowMut<T> for $name<A, B, T> {
+            fn borrow_mut(&mut self) -> &mut T {
+                <T as core::borrow::BorrowMut<T>>::borrow_mut(&mut self.inner)
             }
         }
 
         impl<A, B, T> From<T> for $name<A, B, T> {
             fn from(inner: T) -> Self {
-                Self {
-                    inner,
-                    unit: PhantomData,
-                }
+                Self::new(inner)
             }
         }
     };

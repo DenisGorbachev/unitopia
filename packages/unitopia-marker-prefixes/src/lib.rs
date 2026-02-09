@@ -1,1 +1,6 @@
-unitopia_helpers::define_marker_structs!(Atto, Centi, Deca, Deci, Exa, Femto, Giga, Hecto, Hexagesi, Kilo, Mega, Micro, Milli, Nano, Peta, Pico, Quecto, Quetta, Ronna, Ronto, Tera, Tetravigesi, Yocto, Yotta, Zepto, Zetta,);
+#![deny(clippy::arithmetic_side_effects)]
+
+#[macro_use]
+mod macros;
+mod prefixes;
+pub use prefixes::*;

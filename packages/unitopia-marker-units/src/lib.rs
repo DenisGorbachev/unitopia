@@ -1,7 +1,6 @@
-use unitopia_marker_arith_outputs::{Prod, Quot};
+#![deny(clippy::arithmetic_side_effects)]
 
-unitopia_helpers::define_marker_structs!(Ampere, Candela, GalactosidaseActivityUnit, Kelvin, Kilogram, Meter, Mole, PowerOfHydrogen, Second,);
-
-pub type Area = Prod<Meter, Meter>;
-pub type Newton = Quot<Prod<Kilogram, Meter>, Prod<Second, Second>>;
-pub type Volt = Quot<Prod<Newton, Meter>, Ampere>;
+#[macro_use]
+mod macros;
+mod units;
+pub use units::*;

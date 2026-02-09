@@ -1,4 +1,5 @@
 #![cfg(feature = "num")]
+#![deny(clippy::arithmetic_side_effects)]
 
 use num::rational::Ratio;
 use unitopia_marker_units::Second;

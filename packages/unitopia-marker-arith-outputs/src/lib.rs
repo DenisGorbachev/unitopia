@@ -1,3 +1,5 @@
+#![deny(clippy::arithmetic_side_effects)]
+
 use core::marker::PhantomData;
 
 macro_rules! define_marker_arith_output {

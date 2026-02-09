@@ -6,6 +6,7 @@ use std::ops::{Add, Sub};
 /// BLOCKED: I can't express the "same base unit but different power" if the power is a const generic within the unit (see `impl_binop_self_same_unit_diff_power` in this file)
 #[derive(new, AsRef, AsMut, From, Into, Eq, PartialEq, Ord, PartialOrd, Default, Hash, Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[repr(transparent)]
 pub struct MeasureV2<Value, Unit> {
     #[as_ref]
     #[as_mut]
