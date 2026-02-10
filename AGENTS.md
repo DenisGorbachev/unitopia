@@ -718,6 +718,21 @@ Examples:
 * `M` - a monomial where mass quantity kind has a power of 1 and all other quantity kinds have a power of 0 (represents the mass itself)
 * `M * L * T^-2` - a monomial where mass quantity kind has a power of 1, length quantity kind has a power of 1, time quantity kind has a power of -2, all other quantity kinds have a power of 0 (represents force)
 
+### Dimensional (physics)
+
+A [dimension (physics)](#dimension-physics) which is not reduced according to algebraic rules (remains the same expression as determined by the formula).
+
+Examples:
+
+* `L^+1 * L^-1` - a dimensional of radian
+* `L^+2 * L^-2` - a dimensional of steradian
+
+Notes:
+
+* This definition is non-standard, but it allows to distinguish between truly dimensionless quantities produced by pure counting (e.g. amount of substance, count of oscillations) and the quantities that appear to be dimensionless but actually are calculated from other quantities which are not dimensionless (e.g. radian, steradian).
+* Every dimension is a valid dimensional.
+  * `1` is a special dimensional for pure counts (e.g. amount of substance, count of oscillations)
+
 ### Quantity kind
 
 A kind of a property that can be quantified by measurement.
