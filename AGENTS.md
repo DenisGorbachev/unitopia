@@ -374,6 +374,7 @@ A Rust workspace that provides multiple implementations of physical types.
 
 Requirements:
 
+* Must use the [physical definitions set](#physical-definitions-set)
 * Must keep its members in `packages` dir
 * Must contain at least one member package that exports a [physical type](#physical-type)
 * Every member must use macros to avoid boilerplate code when defining units and prefixes
@@ -392,9 +393,6 @@ Allowances:
 
 Notes:
 
-* Important: there are two frameworks for units-of-measurement that use the same words for different concepts.
-  * Physics defines "quantity" as a pair of a number and a unit.
-  * Metrology defines "quantity" as a physical property.
 * The adjective "unital" indicates that a corresponding noun is related to a [unit](#unit).
 
 Design choices:
@@ -668,18 +666,67 @@ Requirements:
 * Must have a `#[repr(transparent)]` attribute.
 * Must support [custom units](#custom-unit).
 
-### Custom unit
+### Base terms
 
-A [unit](#unit) that is not a part of SI.
+Examples (exhaustive):
+
+* Dimension
+* Unit
+* Quantity
+
+### Physical definitions set
+
+A set of definitions for [base terms](#base-terms) used in theoretical physics.
+
+### Metrological definitions set
+
+A set of definitions for [base terms](#base-terms) used in metrology.
+
+Notes:
+
+* This set is used by BIPM that publishes SI
+* This set is used by OIML that publishes VIM
+
+### Dimension
+
+One of:
+
+* [Dimension (mathematics)](#dimension-mathematics)
+* [Dimension (physics)](#dimension-physics)
+
+### Dimension (mathematics)
+
+A number of degrees of freedom.
 
 Examples:
 
-* Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
-* Power of hydrogen (pH) defined as "−log10(a\_H+), where a\_H+ is the activity of hydrogen(1+) ions in solution"
+* The dimension of a vector space is the number of coordinates necessary to specify any vector.
+
+Notes:
+
+* The use of the word "dimension" to mean a specific coordinate axis (e.g. "time dimension") is informal and mathematically incorrect.
+
+### Dimension (physics)
+
+A [monomial](#monomial) of [quantity kinds](#quantity-kind).
+
+Examples:
+
+* `1` - a monomial where every quantity kind has a power of 0
+* `M` - a monomial where mass quantity kind has a power of 1 and all other quantity kinds have a power of 0 (represents the mass itself)
+* `M * L * T^-2` - a monomial where mass quantity kind has a power of 1, length quantity kind has a power of 1, time quantity kind has a power of -2, all other quantity kinds have a power of 0 (represents force)
 
 ### Quantity
 
-### Quantity-old
+A pair of a value and a unit.
+
+Examples:
+
+* 1 hour
+* 3 kilograms
+* 12 newtons
+
+### Quantity kind
 
 A property that can be quantified by measurement.
 
@@ -698,23 +745,23 @@ Examples:
 
 Notes:
 
-* Some quantities are non-physical (e.g. information, specific currency)
-* Some quantities are dimensionless (e.g. angle)
-* Some quantities are derived (e.g. force is `mass * length / (time * time)`)
+* Some quantity kinds are non-physical (e.g. information, specific currency)
+* Some quantity kinds are [dimensionless](#dimension-physics) (e.g. angle, bit)
+* Some quantity kinds are derived (e.g. force is `mass * length / (time * time)`)
 
-### Quantity group
+### Quantity kind group
 
-A group of related quantities.
+A group of related quantity kinds.
 
 Examples:
 
-* Physical quantity: Length, Mass, Time.
+* Physics: Length, Mass, Time.
 * Currency: U.S. Dollar, Bitcoin, Rai.
 * Other: Information.
 
-### SI base quantity
+### SI base quantity kind
 
-A [quantity](#quantity-old) that is designated as foundational in the International System of Units (SI).
+A [quantity kind](#quantity-kind) that is designated as foundational in the International System of Units (SI).
 
 Examples (exhaustive):
 
@@ -726,9 +773,9 @@ Examples (exhaustive):
 * Amount of substance
 * Luminous intensity
 
-### SI derived quantity
+### SI derived quantity kind
 
-A [quantity](#quantity-old) that is expressed as a [monomial](#monomial) of other SI quantities.
+A [quantity kind](#quantity-kind) that is expressed as a [monomial](#monomial) of other SI quantities.
 
 Examples:
 
@@ -739,7 +786,7 @@ Examples:
 
 ### Unit
 
-A magnitude of a [quantity](#quantity-old).
+A magnitude of a [quantity kind](#quantity-kind).
 
 Examples:
 
@@ -756,7 +803,7 @@ Non-examples:
 
 Notes:
 
-* The units of the same [quantity](#quantity-old) can be converted between each other.
+* The units of the same [quantity kind](#quantity-kind) can be converted between each other.
   * Examples:
     * Meter and foot.
     * Radian and degree.
@@ -767,11 +814,11 @@ Notes:
 
 ### SI base unit
 
-A [unit](#unit) of a [SI base quantity](#si-base-quantity).
+A [unit](#unit) of a [SI base quantity kind](#si-base-quantity-kind).
 
 ### SI derived unit
 
-A [unit](#unit) of a [SI derived quantity](#si-derived-quantity).
+A [unit](#unit) of a [SI derived quantity kind](#si-derived-quantity-kind).
 
 ### Prefix
 
@@ -938,6 +985,15 @@ Requirements:
   * `mul_div_different_unit`
   * `newton_eq_kg_m_s2`
     * This test must check that `1 Newton` is equal to `1 Kilogram * 1 Meter / (1 Second * 1 Second)`
+
+### Custom unit
+
+A [unit](#unit) that is not a part of SI.
+
+Examples:
+
+* Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
+* Power of hydrogen (pH) defined as "−log10(a\_H+), where a\_H+ is the activity of hydrogen(1+) ions in solution"
 
 ### Prefix package
 
