@@ -718,19 +718,9 @@ Examples:
 * `M` - a monomial where mass quantity kind has a power of 1 and all other quantity kinds have a power of 0 (represents the mass itself)
 * `M * L * T^-2` - a monomial where mass quantity kind has a power of 1, length quantity kind has a power of 1, time quantity kind has a power of -2, all other quantity kinds have a power of 0 (represents force)
 
-### Quantity
-
-A pair of a value and a unit.
-
-Examples:
-
-* 1 hour
-* 3 kilograms
-* 12 newtons
-
 ### Quantity kind
 
-A property that can be quantified by measurement.
+A kind of a property that can be quantified by measurement.
 
 Examples:
 
@@ -761,6 +751,37 @@ Examples:
 * Currency: U.S. Dollar, Bitcoin, Rai.
 * Other: Information.
 
+### Quantity
+
+A property that can be quantified by measurement.
+
+Synonyms: Measurand.
+
+Examples:
+
+* Q001: Height of a human measured at under specific physical conditions (time, location, temperature) and posture (head in Frankfort horizontal plane)
+* Q002: Height of a building measured at under specific physical conditions (time, location, temperature)
+* Q003: Width of a human from shoulder tip to shoulder tip measured at under specific physical conditions (time, location, temperature)
+* Q004: Balance of U.S. Dollar on a specific bank account
+
+Notes:
+
+* Some quantities are of the same quantity kind
+  * Examples:
+    * Q001 and Q002 are quantities of "Length" kind
+    * "Width", "Height", "Depth" are quantities of "Length" kind.
+* It is possible to make the quantity more precise by fixing other properties that may affect the measurement (e.g. time, location, temperature)
+
+### Quantity value
+
+A pair of a value and a unit.
+
+Examples:
+
+* 1 hour
+* 3 kilograms
+* 12 newtons
+
 ### SI base quantity kind
 
 A [quantity kind](#quantity-kind) that is designated as foundational in the International System of Units (SI).
@@ -788,7 +809,7 @@ Examples:
 
 ### Unit
 
-A magnitude of a [quantity kind](#quantity-kind).
+A magnitude of a [quantity](#quantity).
 
 Examples:
 
@@ -805,6 +826,17 @@ Non-examples:
 
 Notes:
 
+* Unit does not uniquely determine the quantity kind
+  * Examples
+    * Pascal is associated both with pressure and stress
+* Unit does not uniquely determine the [dimension (physics)](#dimension-physics)
+  * Examples
+    * Radian and steradian are units of different quantity kinds but same dimension `1` (i.e. they are "dimensionless")
+* Unit does uniquely determine the [dimension (physics)](#dimension-physics) for raw (non-reduced) monomials:
+  * Examples:
+    * Radian and steradian have different raw monomials
+      * Radian is `L^+1 * L^-1`
+      * Steradian is `L^+2 * L^-2`
 * The units of the same [quantity kind](#quantity-kind) can be converted between each other.
   * Examples:
     * Meter and foot.
