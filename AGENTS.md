@@ -408,15 +408,15 @@ Design choices:
 
 Constants:
 
-| Name      | Value                                                         | Notes                                       |
-|-----------|---------------------------------------------------------------|:--------------------------------------------|
-| u128::MAX | 340282366920938463463374607431768211455                       |                                             |
-| 10^38     | 100000000000000000000000000000000000000                       | Max conversion factor representable by u128 |
-| 10^60     | 1000000000000000000000000000000000000000000000000000000000000 | Max conversion factor (quetta to quecto)    |
+| Name      | Value                                                         | Notes                                              |
+|-----------|---------------------------------------------------------------|:---------------------------------------------------|
+| u128::MAX | 340282366920938463463374607431768211455                       |                                                    |
+| 10^38     | 100000000000000000000000000000000000000                       | Largest power of 10 representable by u128          |
+| 10^60     | 1000000000000000000000000000000000000000000000000000000000000 | Largest conversion factor in SI (quetta to quecto) |
 
 Prefix conversion notes:
 
-* It is possible but not yet necessary to implement an `fn conversion_succeeds<Src: Scale + Min + Max, Dst: Scale + Min + Max>() -> Option<bool>`:
+* It is possible but not yet necessary to implement an `fn conversion_succeeds<Src: Scale + Bounded, Dst: Scale + Bounded>() -> Option<bool>`:
   * Return values:
     * `Some(true)` if it will always succeed
     * `Some(false)` if it will always fail
@@ -435,7 +435,8 @@ Prefix conversion notes:
     * Some conversions will always fail
     * Some conversions will succeed or fail depending on the actual values at runtime
   * Notes:
-    * The min and max values should have `rust_decimal::Decimal` type
+    * The min and max values should have `rust_decimal::Decimal` type to avoid precision loss
+    * `Bounded` is a trait from `num_traits`
 
 Blockers:
 
@@ -459,6 +460,7 @@ Requirements:
   * Requirements:
     * Must have a `const NUM: u128; // numerator`
     * Must have a `const DEN: u128; // denominator`
+* Must export the [linearity marker traits](#linearity-marker-trait)
 
 ### `unitopia-marker-units`
 
@@ -549,18 +551,18 @@ Requirements:
   * May embed the unit name in the type name
   * May take the unit as a generic parameter
 * Must implement [identity traits](#identity-trait).
-* Must implement [addition traits](#addition-trait) for values with the same unit.
+* Must implement [addition traits](#addition-trait) for values with the same unit if this unit implements the `Linear` [linearity marker trait](#linearity-marker-trait).
 * Must not implement [addition traits](#addition-trait) for values with different units (use [compile-fail tests](#compile-fail-test)).
 * Must not implement [addition traits](#addition-trait) for values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
 * Must implement [general multiplication traits](#general-multiplication-trait) for values with the same or different units.
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
 * Must implement [scalar multiplication traits](#scalar-multiplication-trait) for values with scalars of the same storage type.
-* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit and `B` parameter is a unit that represents a multiplication of `A` and `Self`
+* Must implement `num_traits::MulAdd` for values where `A` parameter is a unit and `B` parameter is a unit that represents a multiplication of `A` and `Self` if `B` implements the `Linear` [linearity marker trait](#linearity-marker-trait).
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a multiplication of `Self` and `A` units.
-* Must implement `num_traits::MulAdd` for values where `A` parameter is a scalar and `B` parameter is `Self`
-* Must implement `num_traits::MulAddAssign` for values where `A` parameter is a scalar and `B` parameter is `Self`
+* Must implement `num_traits::MulAdd` for values where `A` parameter is a scalar and `B` parameter is `Self` if `Self` implements the `Linear` [linearity marker trait](#linearity-marker-trait).
+* Must implement `num_traits::MulAddAssign` for values where `A` parameter is a scalar and `B` parameter is `Self` if `Self` implements the `Linear` [linearity marker trait](#linearity-marker-trait).
 * Must implement serialization/deserialization traits from the popular crates (feature-gated):
   * `serde`
   * `rkyv`
@@ -810,7 +812,6 @@ Notes:
 * Spelling of the metric unit for length:
   * "Meter" in the US and the Philippines
   * "Metre" in other English-speaking nations
-* Some
 
 ### SI base unit
 
@@ -945,7 +946,8 @@ Notes:
   * `num_traits::SaturatingDiv`
   * `num_traits::WrappingDiv`
   * `num_traits::OverflowingDiv`
-* Rem traits (`core::ops::Rem` and `num_traits::CheckedRem`) should not be implemented for units because it does not produce a unital value
+* Units must have implementations of `core::ops::Rem` and `num_traits::CheckedRem` whose `Rhs` is a scalar
+* Units must not have implementations of `core::ops::Rem` and `num_traits::CheckedRem` whose `Rhs` is a unit
 
 ### Scalar multiplication trait
 
@@ -959,7 +961,7 @@ A trait that is either [general multiplication trait](#general-multiplication-tr
 
 Notes:
 
-* `MulAssign` and `DivAssign` are scalar-only because their functions return `()`\_\_
+* `MulAssign` and `DivAssign` are scalar-only because their functions return `()`
 
 ### Unit package
 
@@ -1022,6 +1024,31 @@ Requirements:
     * Must `assert!(diff_large_remainder.is_zero());`
     * Must `assert_eq!(diff_large, large);`
   * `mul_giga_nano_is_uno`
+
+### Marker trait
+
+A trait that doesn't have any functions or associated types.
+
+Notes:
+
+* A marker trait may have generic parameters.
+
+### Mapping trait
+
+A trait that doesn't have any functions but does have associated types.
+
+Notes:
+
+* A mapping trait may have generic parameters.
+* The name "mapping" was chosen because it provides a type-level mapping from the implementing type (`Self`) to the associated type.
+
+### Linearity marker trait
+
+A [marker trait](#marker-trait) with one of the following names:
+
+* `Linear`
+* `Logarithmic`
+* `Exponential`
 
 ### Marker struct
 
