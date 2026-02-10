@@ -32,6 +32,9 @@ Allowances:
 
 Notes:
 
+* Important: there are two frameworks for units-of-measurement that use the same words for different concepts.
+  * Physics defines "quantity" as a pair of a number and a unit.
+  * Metrology defines "quantity" as a physical property.
 * The adjective "unital" indicates that a corresponding noun is related to a [unit](#unit).
 
 Design choices:
@@ -230,13 +233,13 @@ Preferences:
 
 Open questions:
 
-* How to represent [derived units](#derived-unit)?
+* How to represent [SI derived units](#si-derived-unit)?
   * Examples:
     * Newton
     * Square meter
   * Ideas:
     * DUS: Represent them as separate types
-    * DUTNP: Represent them as tuples of nested pairs where the first element is the [base unit](#base-unit) and the second element is the power
+    * DUTNP: Represent them as tuples of nested pairs where the first element is the [SI base unit](#si-base-unit) and the second element is the power
       * Examples
         * `pub type Newton = ((Kilogram, P1), (Meter, P1), (Second, N2));`
       * Properties:
@@ -247,7 +250,7 @@ Open questions:
             * This can be mitigated by convention:
               * Document a specific order of units as canonical
               * Implement arithmetic traits in a way that `type Output` has a canonical order of units
-    * DUTFP: Represent them as tuples of flattened pairs where the first element is the [base unit](#base-unit) and the second element is the power
+    * DUTFP: Represent them as tuples of flattened pairs where the first element is the [SI base unit](#si-base-unit) and the second element is the power
       * Examples:
         * `pub type Newton = (Kilogram, P1, Meter, P1, Second, N2);`
       * Pros:
@@ -316,32 +319,56 @@ Examples:
 
 ## Quantity
 
-A property of a physical object that can be quantified by measurement.
+## Quantity-old
+
+A property that can be quantified by measurement.
 
 Examples:
 
-* Length ([base quantity](#base-quantity))
-* Mass ([base quantity](#base-quantity))
-* Time ([base quantity](#base-quantity))
-* Speed ([derived quantity](#derived-quantity))
-* Force ([derived quantity](#derived-quantity))
-* Energy ([derived quantity](#derived-quantity))
-* Volume ([derived quantity](#derived-quantity))
-* Radian ([derived quantity](#derived-quantity))
-
-## Base quantity
-
-A [quantity](#quantity) that is not expressed as a [monomial](#monomial) of other quantities.
-
-Examples:
-
+* Time
 * Length
 * Mass
+* Speed
+* Force
+* Energy
+* Volume
+* Heat
+* Angle
+* Information
+
+Notes:
+
+* Some quantities are non-physical (e.g. information, specific currency)
+* Some quantities are dimensionless (e.g. angle)
+* Some quantities are derived (e.g. force is `mass * length / (time * time)`)
+
+## Quantity group
+
+A group of related quantities.
+
+Examples:
+
+* Physical quantity: Length, Mass, Time.
+* Currency: U.S. Dollar, Bitcoin, Rai.
+* Other: Information.
+
+## SI base quantity
+
+A [quantity](#quantity-old) that is designated as foundational in the International System of Units (SI).
+
+Examples (exhaustive):
+
 * Time
+* Length
+* Mass
+* Electric current
+* Thermodynamic temperature
+* Amount of substance
+* Luminous intensity
 
-## Derived quantity
+## SI derived quantity
 
-A [quantity](#quantity) that is expressed as a [monomial](#monomial) of other quantities.
+A [quantity](#quantity-old) that is expressed as a [monomial](#monomial) of other SI quantities.
 
 Examples:
 
@@ -352,31 +379,39 @@ Examples:
 
 ## Unit
 
-A magnitude of a [quantity](#quantity).
+A magnitude of a [quantity](#quantity-old).
 
 Examples:
 
 * Second is a unit of time defined as "the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the cesium-133 atom"
 * Meter is a unit of length defined as "the length of the path traveled by light in vacuum during a time interval of 1/299792458 of a second"
 * Mole is a unit of amount of substance defined as exactly 6.02214076 * 10^23.
+* Bit is a unit of information (doesn't have a physical definition because the amount of information representable by a physical object is inherently subjective to a specific observer - it depends on how many states of a physical object a specific observer can distinguish).
+* Radian is a unit of angle defined as the angle subtended at the center of a plane circle by an arc that is equal in length to the radius.
+
+Non-examples:
+
+* Year is not a unit of time because different years have different numbers of days.
+* Month is not a unit of time because different months have different numbers of days (and Feb has a different number of days depending on the year).
 
 Notes:
 
-* The units of the same [quantity](#quantity) can be converted between each other.
+* The units of the same [quantity](#quantity-old) can be converted between each other.
   * Examples:
     * Meter and foot.
     * Radian and degree.
 * Spelling of the metric unit for length:
   * "Meter" in the US and the Philippines
   * "Metre" in other English-speaking nations
+* Some
 
-## Base unit
+## SI base unit
 
-A [unit](#unit) of a [base quantity](#base-quantity).
+A [unit](#unit) of a [SI base quantity](#si-base-quantity).
 
-## Derived unit
+## SI derived unit
 
-A [unit](#unit) of a [derived quantity](#derived-quantity).
+A [unit](#unit) of a [SI derived quantity](#si-derived-quantity).
 
 ## Prefix
 
