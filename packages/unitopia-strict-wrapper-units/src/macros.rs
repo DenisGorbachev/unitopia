@@ -178,13 +178,13 @@ macro_rules! impl_unit_mul_add_traits {
 
 macro_rules! impl_unit_pow_traits {
     ($unit:ident) => {
-        impl<T, const POWER: u32> num_traits::Pow<unitopia_measure::Exponent<POWER>> for $unit<T>
+        impl<T, const POWER: u32> num_traits::Pow<unitopia_helpers::Exponent<POWER>> for $unit<T>
         where
             T: num_traits::Pow<u32, Output = T>,
         {
-            type Output = unitopia_open_wrapper_arith_outputs::Powr<$unit<T>, unitopia_measure::Exponent<POWER>, T>;
+            type Output = unitopia_open_wrapper_arith_outputs::Powr<$unit<T>, unitopia_helpers::Exponent<POWER>, T>;
 
-            fn pow(self, _rhs: unitopia_measure::Exponent<POWER>) -> Self::Output {
+            fn pow(self, _rhs: unitopia_helpers::Exponent<POWER>) -> Self::Output {
                 unitopia_open_wrapper_arith_outputs::Powr::from(<T as num_traits::Pow<u32>>::pow(self.inner, POWER))
             }
         }

@@ -16,7 +16,6 @@ rkyv = { version = "0.8.14", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 unitopia-helpers = { path = "../unitopia-helpers" }
 unitopia-strict-wrapper-units = { path = "../unitopia-strict-wrapper-units" }
-unitopia-measure = { path = "../unitopia-measure" }
 unitopia-open-wrapper-arith-outputs = { path = "../unitopia-open-wrapper-arith-outputs" }
 wincode = { version = "0.3.1", features = ["derive"], optional = true }
 

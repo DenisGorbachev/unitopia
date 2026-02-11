@@ -140,13 +140,13 @@ macro_rules! impl_prefix_mul_add_traits {
 
 macro_rules! impl_prefix_pow_traits {
     ($prefix:ident) => {
-        impl<T, const POWER: u32> num_traits::Pow<unitopia_measure::Exponent<POWER>> for $prefix<T>
+        impl<T, const POWER: u32> num_traits::Pow<unitopia_helpers::Exponent<POWER>> for $prefix<T>
         where
-            T: num_traits::Pow<unitopia_measure::Exponent<POWER>>,
+            T: num_traits::Pow<unitopia_helpers::Exponent<POWER>>,
         {
-            type Output = <T as num_traits::Pow<unitopia_measure::Exponent<POWER>>>::Output;
+            type Output = <T as num_traits::Pow<unitopia_helpers::Exponent<POWER>>>::Output;
 
-            fn pow(self, rhs: unitopia_measure::Exponent<POWER>) -> Self::Output {
+            fn pow(self, rhs: unitopia_helpers::Exponent<POWER>) -> Self::Output {
                 num_traits::Pow::pow(self.inner, rhs)
             }
         }

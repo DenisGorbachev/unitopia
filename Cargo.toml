@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "packages/unitopia-draft-aliases",
+    "packages/unitopia-draft-measure",
     "packages/unitopia-draft-measure-v2",
     "packages/unitopia-draft-measure-v3",
     "packages/unitopia-draft-scale",
@@ -9,7 +9,6 @@ members = [
     "packages/unitopia-marker-arith-outputs",
     "packages/unitopia-marker-prefixes",
     "packages/unitopia-marker-units",
-    "packages/unitopia-measure",
     "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
     "packages/unitopia-strict-wrapper-prefixes",

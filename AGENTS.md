@@ -370,13 +370,13 @@ Notes:
 
 ### `unitopia`
 
-A Rust workspace that provides multiple implementations of physical types.
+A Rust workspace that provides multiple patterns of implementations of quantity value types.
 
 Requirements:
 
 * Must use the [physical definitions set](#physical-definitions-set)
 * Must keep its members in `packages` dir
-* Must contain at least one member package that exports a [physical type](#physical-type)
+* Must contain at least one member package that exports a [quantity value type](#quantity-value-type)
 * Every member must use macros to avoid boilerplate code when defining units and prefixes
 * Every member must define the macros in src/macros.rs
 * Every member must have the following crate-level attributes in src/lib.rs:
@@ -517,9 +517,9 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
     * Must use `define_strict_wrapper_struct`
 * Must use the types from `unitopia-open-wrapper-arith-outputs` to implement the [general multiplication traits](#general-multiplication-trait)
 
-### `unitopia-measure`
+### `unitopia-measure-draft`
 
-A [`unitopia`](#unitopia) member package that exports [Measure](#measure-newtype).
+A [`unitopia`](#unitopia) member package that exports a `Measure` type.
 
 ### Package metric
 
@@ -545,11 +545,6 @@ A newtype that represents a physical measurement outcome.
 
 Requirements:
 
-* Must support a generic storage type (e.g. `u32`, `u64`, `i32`, `i64`, `f32`, `f64` or any other generic type that implements the necessary traits for arithmetic operations).
-* Must support fractional values (e.g. millisecond).
-* Must allow to represent a specific unit
-  * May embed the unit name in the type name
-  * May take the unit as a generic parameter
 * Must implement [identity traits](#identity-trait).
 * Must implement [addition traits](#addition-trait) for values with the same unit if this unit implements the `Linear` [linearity marker trait](#linearity-marker-trait).
 * Must not implement [addition traits](#addition-trait) for values with different units (use [compile-fail tests](#compile-fail-test)).
@@ -659,15 +654,6 @@ Notes:
     * Then: it's possible to implement traits selectively, so non-linear units must not implement [scalar multiplication traits](#scalar-multiplication-trait)
     * Else: it's not possible to implement traits selectively, so non-linear units must implement [scalar multiplication traits](#scalar-multiplication-trait) as a consequence of generic implementations
 
-### Measure newtype
-
-A [physical type](#physical-type) that takes the [unit](#unit) as a generic parameter.
-
-Requirements:
-
-* Must have a `#[repr(transparent)]` attribute.
-* Must support [custom units](#custom-unit).
-
 ### Base terms
 
 Examples (exhaustive):
@@ -710,13 +696,17 @@ Notes:
 
 ### Dimension (physics)
 
-A [monomial](#monomial) of [quantity kinds](#quantity-kind).
+A [monomial](#monomial) of base [quantity kinds](#quantity-kind).
 
 Examples:
 
 * `1` - a monomial where every quantity kind has a power of 0
 * `M` - a monomial where mass quantity kind has a power of 1 and all other quantity kinds have a power of 0 (represents the mass itself)
 * `M * L * T^-2` - a monomial where mass quantity kind has a power of 1, length quantity kind has a power of 1, time quantity kind has a power of -2, all other quantity kinds have a power of 0 (represents force)
+
+Notes:
+
+* The list of base quantity kinds is determined by the metric system.
 
 ### Dimensional (physics)
 
@@ -796,6 +786,18 @@ Examples:
 * 1 hour
 * 3 kilograms
 * 12 newtons
+
+### Measure
+
+A tuple of a value, a unit, a quantity.
+
+Examples:
+
+* Mass of a specific baby at a specific time on specific scales: 4.56 kg.
+
+Note:
+
+* VIM uses the word "measure" to mean an instrument, but in common English "measure" can mean both the instrument and the output, and we need a short word because we'll use this definition often.
 
 ### SI base quantity kind
 
@@ -1072,6 +1074,31 @@ Requirements:
     * Must `assert_eq!(diff_large, large);`
   * `mul_giga_nano_is_uno`
 
+### Quantity value package
+
+A package that exports [quantity value types](#quantity-value-type).
+
+Requirements:
+
+* Must support fractional units (e.g. millisecond).
+
+Allowances:
+
+* May export generic quantity value types that must be specialized by the user.
+* May define the quantity value types using a [quantity value definition package](#quantity-value-definition-package).
+
+### Quantity value definition package
+
+A package that exports code items and guidelines for defining new [quantity value types](#quantity-value-type).
+
+Requirements:
+
+* Must support defining a full [quantity value package](#quantity-value-package).
+
+Allowances:
+
+* May export macros for defining specific quantity value types.
+
 ### Marker trait
 
 A trait that doesn't have any functions or associated types.
@@ -1237,13 +1264,12 @@ A type that represents a [quantity value](#quantity-value).
 Requirements:
 
 * TODO: Move the required trait impls
+* TODO(?): Must implement the `Quantity` trait from `unitopia_helpers`
+  * (we need to express a requirement that a quantity value type must have a value, a unit, a storage)
 
-* Must implement the `Quantity` trait from `unitopia_helpers`
+### Quantity-generic quantity value type
 
-* Broad unit-specific storage-specific quantity type
-  * Corresponds to a quantity kind directly
-
-* Narrow
+A [quantity value type](#quantity-value-type) that has a generic parameter `Q` for quantity.
 
 ### Unit-generic quantity value type
 
@@ -1253,9 +1279,40 @@ A [quantity value type](#quantity-value-type) that has a generic parameter `U` f
 
 A [quantity value type](#quantity-value-type) that has a generic parameter `S` for storage.
 
+* Must support any [numeric type](#numeric-type) as storage.
+
 ### Fully generic quantity value type
 
-A [quantity value type](#quantity-value-type) that is both [unit-generic](#unit-generic-quantity-value-type) and [storage-generic](#storage-generic-quantity-value-type).
+A [quantity value type](#quantity-value-type) that:
+
+* Is [quantity-generic](#quantity-generic-quantity-value-type)
+* Is [unit-generic](#unit-generic-quantity-value-type)
+* Is [storage-generic](#storage-generic-quantity-value-type)
+
+Example pattern:
+
+```rust
+use core::marker::PhantomData;
+
+trait Quantity { type Dim; }          // semantic marker + associated dimension
+trait Unit { type Dim; /* scale */ }  // unit carries dimension
+
+struct Measurement<Q, U, S>
+where
+    Q: Quantity,
+    U: Unit<Dim = Q::Dim>,
+{
+    value: S,
+    quantity: PhantomData<Q>,
+    unit: PhantomData<U>,
+}
+```
+
+Notes:
+
+* This type will be classified as a "foreign type" in dependents, so the dependents can't implement foreign traits for it, so the developer of this type must provide all trait implementations upfront.
+  * This may not be possible at all in a generic way (trait impl overlaps, so we would need to specify every type exactly without using the generics).
+  * It's a lot of work to cover all potential storage types that are published on crates.io.
 
 ### Fully specific quantity value type
 
@@ -1275,11 +1332,11 @@ Examples of names:
 * `GameDelaySeconds`
 * `PersonHeightAtNoonMillimeters`
 
-### Quantity type definition macro
+### Quantity value type definition macro
 
 A macro that defines a quantity type.
 
-Synonyms: QTDM.
+Synonyms: QVTDM.
 
 Requirements:
 
@@ -1292,7 +1349,7 @@ Examples:
 
 ### Fully specific quantity type definition macro
 
-A [QTDM](#quantity-type-definition-macro) that defines a [fully specific quantity type](#fully-specific-quantity-value-type).
+A [QVTDM](#quantity-value-type-definition-macro) that defines a [fully specific quantity type](#fully-specific-quantity-value-type).
 
 Rationale:
 
@@ -1357,7 +1414,7 @@ Requirements:
 [workspace]
 resolver = "2"
 members = [
-    "packages/unitopia-draft-aliases",
+    "packages/unitopia-draft-measure",
     "packages/unitopia-draft-measure-v2",
     "packages/unitopia-draft-measure-v3",
     "packages/unitopia-draft-scale",
@@ -1365,7 +1422,6 @@ members = [
     "packages/unitopia-marker-arith-outputs",
     "packages/unitopia-marker-prefixes",
     "packages/unitopia-marker-units",
-    "packages/unitopia-measure",
     "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
     "packages/unitopia-strict-wrapper-prefixes",

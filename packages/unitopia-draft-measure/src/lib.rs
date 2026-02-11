@@ -16,12 +16,6 @@ macro_rules! def_quantity {
 mod measure;
 
 pub use measure::*;
-pub use unitopia_marker_arith_outputs::Powr;
-pub use unitopia_marker_arith_outputs::{Prod, Quot};
-
-mod exponent;
-
-pub use exponent::*;
 
 mod quantities;
 
