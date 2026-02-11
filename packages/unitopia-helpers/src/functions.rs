@@ -1,7 +1,7 @@
 use core::error::Error;
+use errgonomic::handle_bool;
 use thiserror::Error;
 
-// TODO: Fix error handling
 pub fn validate_lossless_conversion<A, B, E>(input: A) -> Result<(), ValidateLosslessConversionError>
 where
     B: From<A>,
@@ -10,15 +10,15 @@ where
 {
     use ValidateLosslessConversionError::*;
     let intermediate = B::from(input.clone());
-    let output = A::try_from(intermediate).unwrap();
-    if input != output {
-        return Err(EqualityCheckFailed);
-    }
+    let output = A::try_from(intermediate).map_err(|_| ReverseConversionFailed)?;
+    handle_bool!(input != output, EqualityCheckFailed);
     Ok(())
 }
 
 #[derive(Error, Debug)]
 pub enum ValidateLosslessConversionError {
+    #[error("reverse conversion failed")]
+    ReverseConversionFailed,
     #[error("equality check failed")]
     EqualityCheckFailed,
 }

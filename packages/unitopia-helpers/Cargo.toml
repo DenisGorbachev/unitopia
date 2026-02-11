@@ -10,4 +10,5 @@ repository.workspace = true
 path = "src/lib.rs"
 
 [dependencies]
-thiserror = "2.0.18"
+thiserror = { workspace = true }
+errgonomic = { workspace = true }
