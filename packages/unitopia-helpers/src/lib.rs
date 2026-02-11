@@ -6,10 +6,22 @@ mod scalar;
 
 pub use scalar::*;
 
-mod unit;
+mod has_dimensional;
 
-pub use unit::*;
+pub use has_dimensional::*;
 
-mod scale;
+mod has_scale;
 
-pub use scale::*;
+pub use has_scale::*;
+
+mod has_value_copy;
+
+pub use has_value_copy::*;
+
+mod unital;
+
+pub use unital::*;
+
+mod has_value_ref;
+
+pub use has_value_ref::*;

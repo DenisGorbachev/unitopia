@@ -175,7 +175,7 @@ macro_rules! define_strict_wrapper_prefixes {
 macro_rules! impl_prefix_scales {
     ($($name:ident => ($num:expr, $den:expr)),+ $(,)?) => {
         $(
-            impl<T> unitopia_helpers::Scale for $name<T> {
+            impl<T> unitopia_helpers::HasScale for $name<T> {
                 const NUM: u128 = $num;
                 const DEN: u128 = $den;
             }
@@ -194,18 +194,18 @@ macro_rules! impl_cross_prefix_add_sub_traits_for_pair {
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::ops::Mul<<T as unitopia_strict_wrapper_units::UnitValue>::Value, Output = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::ops::Div<<T as unitopia_strict_wrapper_units::UnitValue>::Value, Output = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
             $rhs<T>: unitopia_strict_wrapper_units::UnitValue<Value = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
-            $lhs<T>: unitopia_helpers::Scale,
-            $rhs<T>: unitopia_helpers::Scale,
+            $lhs<T>: unitopia_helpers::HasScale,
+            $rhs<T>: unitopia_helpers::HasScale,
         {
             type Output = $rhs<T>;
 
             fn add(self, rhs: $rhs<T>) -> Self::Output {
                 let lhs_value = <T as unitopia_strict_wrapper_units::UnitValue>::into_value(self.inner);
                 let rhs_value = <T as unitopia_strict_wrapper_units::UnitValue>::into_value(rhs.inner);
-                let lhs_num = <$lhs<T> as unitopia_helpers::Scale>::NUM;
-                let lhs_den = <$lhs<T> as unitopia_helpers::Scale>::DEN;
-                let rhs_num = <$rhs<T> as unitopia_helpers::Scale>::NUM;
-                let rhs_den = <$rhs<T> as unitopia_helpers::Scale>::DEN;
+                let lhs_num = <$lhs<T> as unitopia_helpers::HasScale>::NUM;
+                let lhs_den = <$lhs<T> as unitopia_helpers::HasScale>::DEN;
+                let rhs_num = <$rhs<T> as unitopia_helpers::HasScale>::NUM;
+                let rhs_den = <$rhs<T> as unitopia_helpers::HasScale>::DEN;
 
                 let to_value = |scale: u128| -> <T as unitopia_strict_wrapper_units::UnitValue>::Value {
                     match <T as unitopia_strict_wrapper_units::UnitValue>::Value::try_from(scale) {
@@ -234,18 +234,18 @@ macro_rules! impl_cross_prefix_add_sub_traits_for_pair {
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::ops::Mul<<T as unitopia_strict_wrapper_units::UnitValue>::Value, Output = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::ops::Div<<T as unitopia_strict_wrapper_units::UnitValue>::Value, Output = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
             $rhs<T>: unitopia_strict_wrapper_units::UnitValue<Value = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
-            $lhs<T>: unitopia_helpers::Scale,
-            $rhs<T>: unitopia_helpers::Scale,
+            $lhs<T>: unitopia_helpers::HasScale,
+            $rhs<T>: unitopia_helpers::HasScale,
         {
             type Output = $rhs<T>;
 
             fn sub(self, rhs: $rhs<T>) -> Self::Output {
                 let lhs_value = <T as unitopia_strict_wrapper_units::UnitValue>::into_value(self.inner);
                 let rhs_value = <T as unitopia_strict_wrapper_units::UnitValue>::into_value(rhs.inner);
-                let lhs_num = <$lhs<T> as unitopia_helpers::Scale>::NUM;
-                let lhs_den = <$lhs<T> as unitopia_helpers::Scale>::DEN;
-                let rhs_num = <$rhs<T> as unitopia_helpers::Scale>::NUM;
-                let rhs_den = <$rhs<T> as unitopia_helpers::Scale>::DEN;
+                let lhs_num = <$lhs<T> as unitopia_helpers::HasScale>::NUM;
+                let lhs_den = <$lhs<T> as unitopia_helpers::HasScale>::DEN;
+                let rhs_num = <$rhs<T> as unitopia_helpers::HasScale>::NUM;
+                let rhs_den = <$rhs<T> as unitopia_helpers::HasScale>::DEN;
 
                 let to_value = |scale: u128| -> <T as unitopia_strict_wrapper_units::UnitValue>::Value {
                     match <T as unitopia_strict_wrapper_units::UnitValue>::Value::try_from(scale) {
@@ -272,16 +272,16 @@ macro_rules! impl_cross_prefix_add_sub_traits_for_pair {
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::convert::TryFrom<u128>,
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::ops::Mul<<T as unitopia_strict_wrapper_units::UnitValue>::Value, Output = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::cmp::PartialEq,
-            $lhs<T>: unitopia_helpers::Scale,
-            $rhs<T>: unitopia_helpers::Scale,
+            $lhs<T>: unitopia_helpers::HasScale,
+            $rhs<T>: unitopia_helpers::HasScale,
         {
             fn eq(&self, rhs: &$rhs<T>) -> bool {
                 let lhs_value = *<T as unitopia_strict_wrapper_units::UnitValue>::value_ref(&self.inner);
                 let rhs_value = *<T as unitopia_strict_wrapper_units::UnitValue>::value_ref(&rhs.inner);
-                let lhs_num = <$lhs<T> as unitopia_helpers::Scale>::NUM;
-                let lhs_den = <$lhs<T> as unitopia_helpers::Scale>::DEN;
-                let rhs_num = <$rhs<T> as unitopia_helpers::Scale>::NUM;
-                let rhs_den = <$rhs<T> as unitopia_helpers::Scale>::DEN;
+                let lhs_num = <$lhs<T> as unitopia_helpers::HasScale>::NUM;
+                let lhs_den = <$lhs<T> as unitopia_helpers::HasScale>::DEN;
+                let rhs_num = <$rhs<T> as unitopia_helpers::HasScale>::NUM;
+                let rhs_den = <$rhs<T> as unitopia_helpers::HasScale>::DEN;
                 let to_value = |scale: u128| -> <T as unitopia_strict_wrapper_units::UnitValue>::Value {
                     match <T as unitopia_strict_wrapper_units::UnitValue>::Value::try_from(scale) {
                         Ok(value) => value,
@@ -301,16 +301,16 @@ macro_rules! impl_cross_prefix_add_sub_traits_for_pair {
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::convert::TryFrom<u128>,
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::ops::Mul<<T as unitopia_strict_wrapper_units::UnitValue>::Value, Output = <T as unitopia_strict_wrapper_units::UnitValue>::Value>,
             <T as unitopia_strict_wrapper_units::UnitValue>::Value: core::cmp::PartialOrd,
-            $lhs<T>: unitopia_helpers::Scale,
-            $rhs<T>: unitopia_helpers::Scale,
+            $lhs<T>: unitopia_helpers::HasScale,
+            $rhs<T>: unitopia_helpers::HasScale,
         {
             fn partial_cmp(&self, rhs: &$rhs<T>) -> Option<core::cmp::Ordering> {
                 let lhs_value = *<T as unitopia_strict_wrapper_units::UnitValue>::value_ref(&self.inner);
                 let rhs_value = *<T as unitopia_strict_wrapper_units::UnitValue>::value_ref(&rhs.inner);
-                let lhs_num = <$lhs<T> as unitopia_helpers::Scale>::NUM;
-                let lhs_den = <$lhs<T> as unitopia_helpers::Scale>::DEN;
-                let rhs_num = <$rhs<T> as unitopia_helpers::Scale>::NUM;
-                let rhs_den = <$rhs<T> as unitopia_helpers::Scale>::DEN;
+                let lhs_num = <$lhs<T> as unitopia_helpers::HasScale>::NUM;
+                let lhs_den = <$lhs<T> as unitopia_helpers::HasScale>::DEN;
+                let rhs_num = <$rhs<T> as unitopia_helpers::HasScale>::NUM;
+                let rhs_den = <$rhs<T> as unitopia_helpers::HasScale>::DEN;
                 let to_value = |scale: u128| -> <T as unitopia_strict_wrapper_units::UnitValue>::Value {
                     match <T as unitopia_strict_wrapper_units::UnitValue>::Value::try_from(scale) {
                         Ok(value) => value,

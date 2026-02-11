@@ -96,7 +96,7 @@ Requirements:
 * Must export a `Scalar<T>` type (a [strict open wrapper struct](#strict-open-wrapper-struct) for scalars)
   * Notes:
     * Needed to implement `Mul`, `Div`, `MulAdd` in a generic way while satisfying Rust coherence rules
-* Must export a `Scale` trait:
+* Must export a `HasScale` trait:
   * Requirements:
     * Must have a `const NUM: u128; // numerator`
     * Must have a `const DEN: u128; // denominator`
@@ -508,6 +508,15 @@ A [unit](#unit) of a [SI base quantity kind](#si-base-quantity-kind).
 
 A [unit](#unit) of a [SI derived quantity kind](#si-derived-quantity-kind).
 
+## Custom unit
+
+A [unit](#unit) that is not a part of SI.
+
+Examples:
+
+* Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
+* Power of hydrogen (pH) defined as "−log10(a_H+), where a_H+ is the activity of hydrogen(1+) ions in solution"
+
 ## Prefix
 
 A name of a rational number acts as a coefficient for a [unit](#unit).
@@ -674,15 +683,6 @@ Requirements:
   * `mul_div_different_unit`
   * `newton_eq_kg_m_s2`
     * This test must check that `1 Newton` is equal to `1 Kilogram * 1 Meter / (1 Second * 1 Second)`
-
-## Custom unit
-
-A [unit](#unit) that is not a part of SI.
-
-Examples:
-
-* Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
-* Power of hydrogen (pH) defined as "−log10(a_H+), where a_H+ is the activity of hydrogen(1+) ions in solution"
 
 ## Prefix package
 
@@ -869,3 +869,91 @@ A struct that represents the output of the arithmetic operation.
 Notes:
 
 * Arith outputs should be used as `type Output` in the arithmetic trait implementations.
+
+## Quantity value type
+
+A type that represents a [quantity value](#quantity-value).
+
+Requirements:
+
+* TODO: Move the required trait impls
+* Must implement the `Quantity` trait from `unitopia_helpers`
+
+* Broad unit-specific storage-specific quantity type
+  * Corresponds to a quantity kind directly
+* Narrow
+
+## Unit-generic quantity value type
+
+A [quantity value type](#quantity-value-type) that has a generic parameter `U` for unit.
+
+## Storage-generic quantity value type
+
+A [quantity value type](#quantity-value-type) that has a generic parameter `S` for storage.
+
+## Fully generic quantity value type
+
+A [quantity value type](#quantity-value-type) that is both [unit-generic](#unit-generic-quantity-value-type) and [storage-generic](#storage-generic-quantity-value-type).
+
+## Fully specific quantity value type
+
+A [quantity value type](#quantity-value-type) that doesn't have any generic parameters.
+
+Requirements:
+
+* Must have a suffix that is equal to the unit name in plural form.
+* Must document the exact conditions of the measurement in a doc comment attached to the type.
+
+Allowances:
+
+* May document the exact conditions of the measurement in the type name itself.
+
+Examples of names:
+
+* `GameDelaySeconds`
+* `PersonHeightAtNoonMillimeters`
+
+## Quantity type definition macro
+
+A macro that defines a quantity type.
+
+Synonyms: QTDM.
+
+Requirements:
+
+* Name must start with "quantity"
+
+Examples:
+
+* `quantity` - defines a generic quantity type
+* `quantity_of_seconds_as_u32` - defines a fully specific quantity type
+
+## Fully specific quantity type definition macro
+
+A [QTDM](#quantity-type-definition-macro) that defines a [fully specific quantity type](#fully-specific-quantity-value-type).
+
+Rationale:
+
+* If the unit type and storage type are known statically at macro expansion time (which is even earlier than compile time), then it is possible to provide specific trait implementations
+  * Examples of groups of specific trait implementations:
+    * Infallible conversions to wider types (e.g. `impl From<DurationSeconds> for DurationMilliseconds` if DurationSeconds uses u32 and DurationMilliseconds uses u64; note that such impl is only possible if DurationSeconds uses a narrower type than DurationMilliseconds).
+    * Infallible conversions from types from foreign crates (e.g. `std`, `time`, `chrono` for quantities of time kind).
+
+Requirements:
+
+* Name must match the pattern: `quantity_of_{{units}}_as_{{storage}}`
+  * `{{units}}` must be a unit type name in snake_case and plural form
+    * Examples:
+      * `seconds`
+  * `{{storage}}` must be a storage type name in snake_case and singular form:
+    * Requirements:
+      * The following path prefixes must be omitted: `core::primitive`
+      * `::` must be replaced by `_`
+    * Allowances:
+      * The path prefix may be omitted for commonly used types
+    * Examples:
+      * `core::primitive::u64` -> `u64`
+      * `rust_decimal::Decimal` -> `decimal`
+
+* Examples:
+  * `quantity_of_seconds_as_u32`
