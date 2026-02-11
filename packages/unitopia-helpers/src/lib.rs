@@ -39,3 +39,5 @@ mod has_storage;
 pub use has_storage::*;
 mod quantity;
 pub use quantity::*;
+mod functions;
+pub use functions::*;

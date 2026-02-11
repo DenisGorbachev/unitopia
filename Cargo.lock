@@ -514,6 +514,9 @@ dependencies = [
 [[package]]
 name = "unitopia-helpers"
 version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "unitopia-marker-arith-outputs"
