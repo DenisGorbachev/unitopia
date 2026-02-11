@@ -934,13 +934,13 @@ Example pattern:
 ```rust
 use core::marker::PhantomData;
 
-trait Quantity { type Dim; }          // semantic marker + associated dimension
-trait Unit { type Dim; /* scale */ }  // unit carries dimension
+trait Quantity { type Dimension; }          // semantic marker + associated dimension
+trait Unit { type Dimension; /* scale */ }  // unit carries dimension
 
 struct Measurement<Q, U, S>
 where
     Q: Quantity,
-    U: Unit<Dim = Q::Dim>,
+    U: Unit<Dimension = Q::Dimension>,
 {
     value: S,
     quantity: PhantomData<Q>,
@@ -950,9 +950,10 @@ where
 
 Notes:
 
-* This type will be classified as a "foreign type" in dependents, so the dependents can't implement foreign traits for it, so the developer of this type must provide all trait implementations upfront.
+* If exported from our crate, this type will be classified as a "foreign type" in dependents, so the dependents won't be able to implement foreign traits for it, so we must provide all trait implementations upfront.
   * This may not be possible at all in a generic way (trait impl overlaps, so we would need to specify every type exactly without using the generics).
   * It's a lot of work to cover all potential storage types that are published on crates.io.
+  * We may export such type but mention in the docs that it has a limited set of impls, and if the user wishes to implement more traits for it, they can either submit a PR or define their own `Measurement` type using a macro.
 
 ## Fully specific quantity value type
 
@@ -987,9 +988,11 @@ Examples:
 * `quantity` - defines a generic quantity type
 * `quantity_of_seconds_as_u32` - defines a fully specific quantity type
 
-## Fully specific quantity type definition macro
+## Fully specific quantity value type definition macro
 
 A [QVTDM](#quantity-value-type-definition-macro) that defines a [fully specific quantity type](#fully-specific-quantity-value-type).
+
+Synonyms: FSQVTDM.
 
 Rationale:
 
@@ -1014,5 +1017,23 @@ Requirements:
       * `core::primitive::u64` -> `u64`
       * `rust_decimal::Decimal` -> `decimal`
 
-* Examples:
-  * `quantity_of_seconds_as_u32`
+Examples of names:
+
+* `quantity_of_seconds_as_u32`
+
+## Fully specific time quantity value type definition macro
+
+A [FSQVTDM](#fully-specific-quantity-value-type-definition-macro) that uses a time unit.
+
+Requirements:
+
+* Must implement conversions from and into types exported from the foreign timekeeping crates (see [timestamp-please project doc](#timestamp-please-project-doc))
+
+Examples of names:
+
+* `quantity_of_seconds_as_u32`
+* `quantity_of_nanoseconds_as_u128`
+
+## timestamp-please project doc
+
+A document at <https://github.com/DenisGorbachev/timestamp-please/blob/main/.agents/project.md>
