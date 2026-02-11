@@ -102,6 +102,10 @@ Requirements:
     * Must have a `const DEN: u128; // denominator`
 * Must export the [linearity marker traits](#linearity-marker-trait)
 
+## `unitopia-marker-quantities`
+
+A [`unitopia`](#unitopia) member [quantity package](#quantity-package) that exports physical quantities implemented as [marker structs](#marker-struct).
+
 ## `unitopia-marker-units`
 
 A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports physical units implemented as [marker structs](#marker-struct).
@@ -160,6 +164,30 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
 ## `unitopia-measure-draft`
 
 A [`unitopia`](#unitopia) member package that exports a `Measure` type.
+
+## `unitopia-measurement-draft`
+
+A [`unitopia`](#unitopia) member package that exports a `Measurement` [FGQVT](#fully-generic-quantity-value-type).
+
+Requirements:
+
+* Must use the `Unit` and `Quantity` traits from `unitopia-helpers`
+* Must use the types from `unitopia-marker-prefixes` and `unitopia-marker-units` in the tests
+* Must implement conversions from and into types exported from the foreign timekeeping crates (see [timestamp-please project doc](#timestamp-please-project-doc))
+  * Must not lose data on conversions:
+    * Must implement conversions into foreign timekeeping types only for those unit types and storage types that are natively supported by the foreign timekeeping types
+    * Must implement conversions from foreign timekeeping types via `IntoMeasurement` trait with `into_measurement` method that may return a tuple of `Measurement` values
+      * Rationale: this is necessary to correctly convert types that stores values of different units in the same type (e.g. `core::time::Duration` which stores both seconds and nanoseconds)
+      * Requirements:
+        * The storage types used in the implementation `Output` type must be at least as large as the storage types used in the implementor (so that conversion is lossless)
+
+```rust
+pub trait IntoMeasurement {
+    type Output;
+
+    fn into_measurement(self) -> Self::Output;
+}
+```
 
 ## Package metric
 
@@ -661,6 +689,10 @@ Notes:
 
 * `MulAssign` and `DivAssign` are scalar-only because their functions return `()`
 
+## Quantity package
+
+TODO
+
 ## Unit package
 
 A Rust package that exports [unit](#unit) types.
@@ -928,6 +960,8 @@ A [quantity value type](#quantity-value-type) that:
 * Is [quantity-generic](#quantity-generic-quantity-value-type)
 * Is [unit-generic](#unit-generic-quantity-value-type)
 * Is [storage-generic](#storage-generic-quantity-value-type)
+
+Synonyms: FGQVT
 
 Example pattern:
 
