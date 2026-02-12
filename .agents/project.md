@@ -121,6 +121,8 @@ A [`unitopia`](#unitopia) member package that exports the following [marker stru
 * `Prod<A, B>`
 * `Quot<A, B>`
 * `Powr<A, N>`
+* `Summ<A>`
+* `Diff<A>`
 
 Requirements:
 
@@ -214,9 +216,19 @@ A newtype that represents a physical measurement outcome.
 Requirements:
 
 * Must implement [identity traits](#identity-trait).
-* Must implement [addition traits](#addition-trait) for values with the same unit if this unit implements the `Linear` [linearity marker trait](#linearity-marker-trait).
-* Must not implement [addition traits](#addition-trait) for values with different units (use [compile-fail tests](#compile-fail-test)).
+* Must implement [addition traits](#addition-trait) for values with the same quantity (with same or different units) if this unit implements the `Linear` [linearity marker trait](#linearity-marker-trait).
+  * Requirements:
+    * Every addition operation that returns a value must return a quantity value whose quantity is `Summ<Q>` (where `Q` is the input quantity type).
+    * `Summ` must have exactly one generic argument.
+* Must implement [subtraction traits](#subtraction-trait) for values with the same unit and quantity if this unit implements the `Linear` [linearity marker trait](#linearity-marker-trait).
+  * Requirements:
+    * Every subtraction operation that returns a value must return a quantity value whose quantity is `Diff<Q>` (where `Q` is the input quantity type).
+    * `Diff` must have exactly one generic argument.
+* Must not implement [addition traits](#addition-trait) for values with different quantities (use [compile-fail tests](#compile-fail-test)).
 * Must not implement [addition traits](#addition-trait) for values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
+* Must not implement [subtraction traits](#subtraction-trait) for values with different units (use [compile-fail tests](#compile-fail-test)).
+* Must not implement [subtraction traits](#subtraction-trait) for values with different quantities (use [compile-fail tests](#compile-fail-test)).
+* Must not implement [subtraction traits](#subtraction-trait) for values with scalars of any storage type (use [compile-fail tests](#compile-fail-test)).
 * Must implement [general multiplication traits](#general-multiplication-trait) for values with the same or different units.
   * Requirements:
     * Must have a `type Output` with a distinct unit that represents a [monomial](#monomial) of input units.
@@ -643,15 +655,20 @@ A trait from the following list:
 
 * `core::ops::Add`
 * `core::ops::AddAssign`
+* `num_traits::CheckedAdd`
+* `num_traits::SaturatingAdd`
+* `num_traits::WrappingAdd`
+* `num_traits::OverflowingAdd`
+
+## Subtraction trait
+
+A trait from the following list:
+
 * `core::ops::Sub`
 * `core::ops::SubAssign`
-* `num_traits::CheckedAdd`
 * `num_traits::CheckedSub`
-* `num_traits::SaturatingAdd`
 * `num_traits::SaturatingSub`
-* `num_traits::WrappingAdd`
 * `num_traits::WrappingSub`
-* `num_traits::OverflowingAdd`
 * `num_traits::OverflowingSub`
 
 ## General multiplication trait
@@ -711,7 +728,8 @@ Requirements:
 * Must contain the following tests:
   * `add_sub_scalar_failure` (compile-fail)
   * `add_sub_same_unit`
-  * `add_sub_different_unit_failure` (compile-fail)
+  * `add_different_unit_summ`
+  * `sub_different_unit_diff`
   * `mul_div_scalar`
   * `mul_div_same_unit`
   * `mul_div_different_unit`
@@ -936,6 +954,8 @@ A type that represents a [quantity value](#quantity-value).
 Requirements:
 
 * TODO: Move the required trait impls
+* Must implement [addition traits](#addition-trait) for values of the same quantity (with same or different units), and every addition that returns a value must return a quantity value whose quantity is `Summ<Q>`.
+* Must implement [subtraction traits](#subtraction-trait) for values of the same quantity, and every subtraction that returns a value must return a quantity value whose quantity is `Diff<Q>`.
 * TODO(?): Must implement the `Quantity` trait from `unitopia_helpers`
   * (we need to express a requirement that a quantity value type must have a value, a unit, a storage)
 
