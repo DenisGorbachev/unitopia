@@ -4,16 +4,17 @@
 
 A structure with the following fields:
 
-* Name (required [name](#name))
-* Definition (required [definition](#definition))
-* Synonyms (optional list of strings)
-* Constructors (optional list of [constructors](#constructor) that contains all possible constructors of a concept)
-* Examples (optional [listmap](#listmap) of [examples](#example))
-* Requirements (optional [listmap](#listmap) of [requirements](#requirement))
-* Preferences (optional [listmap](#listmap) of [preferences](#preference))
-* Propositions (optional [listmap](#listmap) of [propositions](#proposition))
-* Methods (optional map from method names to [method specifications](#method-specification))
-* Notes (optional [listmap](#listmap) of [notes](#note))
+* [Name](#name)
+* [Definition](#definition)
+* [Aliases](#aliases)
+* [Constructors](#constructors)
+* [Examples](#examples)
+* [Requirements](#requirements)
+* [Preferences](#preferences)
+* [Propositions](#propositions)
+* [Methods](#methods)
+* [Notes](#notes)
+* [Custom sections](#custom-sections)
 
 Examples:
 
@@ -49,6 +50,52 @@ Notes:
 * May start with an article ("A", "An", "The").
 * May start with the name of the concept being defined.
 * May be a multiline string.
+
+## Aliases
+
+An optional list of strings that represent alternative names for a concept.
+
+## Constructors
+
+An optional list of [constructors](#constructor) that contains all possible constructors of a concept.
+
+Aliases: "One of"
+
+## Examples
+
+An optional [listmap](#listmap) of [examples](#example).
+
+Notes:
+
+* The Markdown document may contain multiple sections that start with "Examples" but are not exactly equal to "Examples". Such sections should be treated as related to, but not exactly equal to examples of a concept.
+  * Examples:
+    * "Examples of names"
+    * "Examples of calls"
+    * "Examples of hashes"
+
+## Requirements
+
+An optional [listmap](#listmap) of [requirements](#requirement).
+
+## Preferences
+
+An optional [listmap](#listmap) of [preferences](#preference).
+
+## Propositions
+
+An optional [listmap](#listmap) of [propositions](#proposition).
+
+## Methods
+
+An optional map from method names to [method specifications](#method-specification).
+
+## Notes
+
+An optional [listmap](#listmap) of [notes](#note).
+
+## Custom sections
+
+An optional [listmap](#listmap) of [listmaps](#listmap) of [notes](#note).
 
 ## Constructor
 
