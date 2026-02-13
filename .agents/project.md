@@ -102,6 +102,31 @@ Requirements:
     * Must have a `const DEN: u128; // denominator`
 * Must export the [linearity marker traits](#linearity-marker-trait)
 
+## `unitopia-test-helpers`
+
+A [`unitopia`](#unitopia) member package various helpers for a [quantity value test package](#quantity-value-test-package).
+
+TODO:
+
+* The testing approach that uses a custom language can't do compile-fail tests
+  * Or can it? Can we ask the TestContext implementor package to produce a valid Rust code?
+
+Requirements:
+
+* Must export the following functions:
+  * `parse_fractional_unit` ((1, Milli, Second))
+  * `add_sub_scalar_failure` (compile-fail)
+  * `add_sub_same_unit`
+  * `add_same_quantity_unit`
+  * `sub_same_quantity_unit`
+  * `add_different_unit_failure` (compile-fail)
+  * `sub_different_unit_failure` (compile-fail)
+  * `mul_div_scalar`
+  * `mul_div_same_unit`
+  * `mul_div_different_unit`
+  * `newton_eq_kg_m_s2`
+    * This test must check that `1 Newton` is equal to `1 Kilogram * 1 Meter / (1 Second * 1 Second)`
+
 ## `unitopia-marker-quantities`
 
 A [`unitopia`](#unitopia) member [quantity package](#quantity-package) that exports physical quantities implemented as [marker structs](#marker-struct).
@@ -724,19 +749,7 @@ Requirements:
   * `Area`
   * `Newton`
   * `Volt`
-* Must define all units in src/units.rs (not separate files)
-* Must contain the following tests:
-  * `add_sub_scalar_failure` (compile-fail)
-  * `add_sub_same_unit`
-  * `add_same_quantity_unit`
-  * `sub_same_quantity_unit`
-  * `add_different_unit_failure` (compile-fail)
-  * `sub_different_unit_failure` (compile-fail)
-  * `mul_div_scalar`
-  * `mul_div_same_unit`
-  * `mul_div_different_unit`
-  * `newton_eq_kg_m_s2`
-    * This test must check that `1 Newton` is equal to `1 Kilogram * 1 Meter / (1 Second * 1 Second)`
+* Must keep the unit definitions in src/units.rs (not separate files)
 
 ## Prefix package
 
@@ -768,28 +781,35 @@ Requirements:
 
 ## Quantity value package
 
-A package that exports [quantity value types](#quantity-value-type).
+One of:
 
-Requirements:
+* [Generic quantity value package](#generic-quantity-value-package)
+* [Macro quantity value package](#macro-quantity-value-package)
 
-* Must support fractional units (e.g. millisecond).
+## Generic quantity value package
+
+A package that exports generic [quantity value types](#quantity-value-type) that must be specialized by the user.
 
 Allowances:
 
-* May export generic quantity value types that must be specialized by the user.
-* May define the quantity value types using a [quantity value definition package](#quantity-value-definition-package).
+* May export generic quantity value types .
+* May define the quantity value types using a [quantity value definition package](#macro-quantity-value-package).
 
-## Quantity value definition package
+## Macro quantity value package
 
 A package that exports code items and guidelines for defining new [quantity value types](#quantity-value-type).
-
-Requirements:
-
-* Must support defining a full [quantity value package](#quantity-value-package).
 
 Allowances:
 
 * May export macros for defining specific quantity value types.
+
+## Quantity value test package
+
+A package that tests a specific [quantity value package](#quantity-value-package).
+
+Requirements:
+
+* Must define one [quantity value type](#quantity-value-type) per quantity in `unitopia-test-helpers` using only the items exported from the specific quantity value package under test.
 
 ## Marker trait
 
