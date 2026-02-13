@@ -1088,8 +1088,10 @@ Requirements:
 * Must contain the following tests:
   * `add_sub_scalar_failure` (compile-fail)
   * `add_sub_same_unit`
-  * `add_different_unit_summ`
-  * `sub_different_unit_diff`
+  * `add_same_quantity_unit`
+  * `sub_same_quantity_unit`
+  * `add_different_unit_failure` (compile-fail)
+  * `sub_different_unit_failure` (compile-fail)
   * `mul_div_scalar`
   * `mul_div_same_unit`
   * `mul_div_different_unit`
@@ -1314,8 +1316,10 @@ A type that represents a [quantity value](#quantity-value).
 Requirements:
 
 * TODO: Move the required trait impls
-* Must implement [addition traits](#addition-trait) for values of the same quantity (with same or different units), and every addition that returns a value must return a quantity value whose quantity is `Summ<Q>`.
-* Must implement [subtraction traits](#subtraction-trait) for values of the same quantity, and every subtraction that returns a value must return a quantity value whose quantity is `Diff<Q>`.
+* Must implement [addition traits](#addition-trait) for values of the same quantity and unit
+  * Must set the quantity in the `Output` to `Summ<Q>` where `Q` is the input quantity
+* Must implement [subtraction traits](#subtraction-trait) for values of the same quantity and unit
+  * Must set the quantity in the `Output` to `Diff<Q>` where `Q` is the input quantity
 * TODO(?): Must implement the `Quantity` trait from `unitopia_helpers`
   * (we need to express a requirement that a quantity value type must have a value, a unit, a storage)
 
