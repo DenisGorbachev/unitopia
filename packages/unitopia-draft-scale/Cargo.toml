@@ -11,7 +11,6 @@ path = "src/lib.rs"
 
 [dependencies]
 typenum = { version = "1.19.0", optional = true }
-unitopia-marker-units = { path = "../unitopia-marker-units" }
 
 [features]
 typenum = ["dep:typenum"]

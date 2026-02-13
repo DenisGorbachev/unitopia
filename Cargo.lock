@@ -1654,7 +1654,6 @@ name = "unitopia-draft-scale"
 version = "0.1.0"
 dependencies = [
  "typenum",
- "unitopia-marker-units",
 ]
 
 [[package]]
