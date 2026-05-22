@@ -1588,9 +1588,6 @@ dependencies = [
 [[package]]
 name = "unitopia-draft-scale"
 version = "0.1.0"
-dependencies = [
- "typenum",
-]
 
 [[package]]
 name = "unitopia-helpers"
@@ -1622,12 +1619,6 @@ dependencies = [
 [[package]]
 name = "unitopia-numeric-strict-wrapper-prefixes"
 version = "0.1.0"
-dependencies = [
- "bitcode",
- "rkyv 0.8.14",
- "serde",
- "wincode",
-]
 
 [[package]]
 name = "unitopia-open-wrapper-arith-outputs"

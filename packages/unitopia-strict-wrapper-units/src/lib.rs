@@ -1,4 +1,5 @@
 #![deny(clippy::arithmetic_side_effects)]
+#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 /// This trait is required to distinguish between units and scalars.
 /// [`Mul`](core::ops::Mul) impl whose rhs is a unit must have a `type Output` whose outer type is `Prod`.

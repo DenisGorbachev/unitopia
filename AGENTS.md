@@ -405,6 +405,8 @@ A function marked with `#[test]` or `#[tokio::test]`.
 
 * Must return a `Result`
 * Must implement proper error handling via `errgonomic` crate
+* Should use macros from `assertables` crate
+  * Should use `assert_infix` instead of `assert_gt`, `assert_ge`, `assert_lt`, `assert_le`, `assert_eq`
 
 ### Macros
 
@@ -2856,4 +2858,16 @@ repository = "https://github.com/DenisGorbachev/unitopia"
 [workspace.dependencies]
 errgonomic = "0.5.0"
 thiserror = "2.0.18"
+```
+
+### fnox.toml
+
+```toml
+#:schema https://fnox.jdx.dev/schema.json
+
+if_missing = "error"
+
+[providers]
+keychain = { type = "keychain", service = "rust-pre-public-lib-template" }
+pass = { type = "password-store", prefix = "rust-pre-public-lib-template/" }
 ```

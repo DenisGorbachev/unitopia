@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::arithmetic_side_effects)]
+#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 //! Generic measure type and quantity helpers.
 

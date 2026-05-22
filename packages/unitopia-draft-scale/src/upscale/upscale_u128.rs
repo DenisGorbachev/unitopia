@@ -1,12 +1,11 @@
 use crate::Upscale;
+use core::cmp::Ordering::{Equal, Greater, Less};
 
 fn wide_ge((lhs_high, lhs_low): (u8, u128), (rhs_high, rhs_low): (u8, u128)) -> bool {
-    if lhs_high > rhs_high {
-        true
-    } else if lhs_high < rhs_high {
-        false
-    } else {
-        lhs_low >= rhs_low
+    match lhs_high.cmp(&rhs_high) {
+        Greater => true,
+        Less => false,
+        Equal => lhs_low >= rhs_low,
     }
 }
 
