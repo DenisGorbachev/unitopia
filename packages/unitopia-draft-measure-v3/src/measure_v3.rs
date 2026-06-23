@@ -14,7 +14,7 @@ pub struct MeasureV3<Value, Unit, const POWER: i64> {
 }
 
 /// Temporary placeholder for unsupported type-level power composition.
-const BLOCKED_POWER: i64 = i64::from_ne_bytes([u8::MAX; core::mem::size_of::<i64>()]);
+const BLOCKED_POWER: i64 = i64::from_ne_bytes([u8::MAX; size_of::<i64>()]);
 
 macro_rules! impl_binop_self_same_unit_same_power {
     ($trait_name:ident, $method:ident) => {

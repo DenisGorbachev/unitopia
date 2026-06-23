@@ -2896,6 +2896,15 @@ repository = "https://github.com/DenisGorbachev/unitopia"
 [workspace.dependencies]
 errgonomic = "0.5.0"
 thiserror = "2.0.18"
+
+[workspace.lints.rust]
+redundant_imports = "deny"
+unused_import_braces = "deny"
+# unused_qualifications must not be "deny" because our code style has multiple `use Foo::*;`, and some macros (derive_more::Display, strum::Display, strum::EnumString) produce code with full qualifications
+# unused_qualifications = "deny"
+
+[workspace.lints.clippy]
+absolute_paths = "deny"
 ```
 
 ### fnox.toml

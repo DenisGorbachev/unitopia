@@ -2,6 +2,7 @@ use core::marker::PhantomData;
 use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use num_traits::ops::overflowing::{OverflowingAdd, OverflowingSub};
 use num_traits::{CheckedAdd, CheckedSub, ConstZero, MulAdd, MulAddAssign, Pow, SaturatingAdd, SaturatingSub, WrappingAdd, WrappingSub, Zero};
+use unitopia_helpers::Exponent;
 use unitopia_marker_arith_outputs::{Powr, Prod, Quot};
 
 #[derive(derive_new::new, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug, Default)]
@@ -258,13 +259,13 @@ where
     }
 }
 
-impl<Unit, Value, const POWER: u32> Pow<unitopia_helpers::Exponent<POWER>> for Measure<Unit, Value>
+impl<Unit, Value, const POWER: u32> Pow<Exponent<POWER>> for Measure<Unit, Value>
 where
     Value: Pow<u32, Output = Value>,
 {
-    type Output = Measure<Powr<Unit, unitopia_helpers::Exponent<POWER>>, Value>;
+    type Output = Measure<Powr<Unit, Exponent<POWER>>, Value>;
 
-    fn pow(self, _rhs: unitopia_helpers::Exponent<POWER>) -> Self::Output {
-        Measure::<Powr<Unit, unitopia_helpers::Exponent<POWER>>, Value>::new_const(self.value.pow(POWER))
+    fn pow(self, _rhs: Exponent<POWER>) -> Self::Output {
+        Measure::<Powr<Unit, Exponent<POWER>>, Value>::new_const(self.value.pow(POWER))
     }
 }

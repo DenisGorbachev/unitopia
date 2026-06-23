@@ -2,6 +2,7 @@
 #![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 use core::marker::PhantomData;
+use core::ops::Div;
 
 macro_rules! define_open_wrapper_arith_output {
     ($name:ident<$lhs:ident, $rhs:ident>) => {
@@ -82,13 +83,13 @@ impl_open_wrapper_arith_output!(Prod);
 impl_open_wrapper_arith_output!(Quot);
 impl_open_wrapper_arith_output!(Powr);
 
-impl<A, B, C, D, LhsValue, RhsValue, OutValue> core::ops::Div<Prod<C, D, RhsValue>> for Prod<A, B, LhsValue>
+impl<A, B, C, D, LhsValue, RhsValue, OutValue> Div<Prod<C, D, RhsValue>> for Prod<A, B, LhsValue>
 where
-    LhsValue: core::ops::Div<RhsValue, Output = OutValue>,
+    LhsValue: Div<RhsValue, Output = OutValue>,
 {
     type Output = Quot<Prod<A, B, LhsValue>, Prod<C, D, RhsValue>, OutValue>;
 
     fn div(self, rhs: Prod<C, D, RhsValue>) -> Self::Output {
-        Quot::from(core::ops::Div::div(self.inner, rhs.inner))
+        Quot::from(Div::div(self.inner, rhs.inner))
     }
 }

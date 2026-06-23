@@ -9,6 +9,9 @@ repository.workspace = true
 [lib]
 path = "src/lib.rs"
 
+[lints]
+workspace = true
+
 [dependencies]
 thiserror = { workspace = true }
 errgonomic = { workspace = true }
