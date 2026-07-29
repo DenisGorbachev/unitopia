@@ -1,5 +1,5 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = [
     "packages/unitopia-draft-measure",
     "packages/unitopia-draft-measure-v2",
@@ -17,10 +17,36 @@ members = [
 ]
 
 [workspace.package]
+version = "0.1.0"
 edition = "2024"
-rust-version = "1.85.0"
+rust-version = "1.93.1"
 homepage = "https://github.com/DenisGorbachev/unitopia"
 repository = "https://github.com/DenisGorbachev/unitopia"
+keywords = []
+categories = []
+exclude = [
+    ".*",
+    "*.local.*",
+    "doc/dev",
+    "specs",
+    "AGENTS.ts",
+    "README.ts",
+    "AGENTS*.md",
+    "CLAUDE*.md",
+    "deno.lock",
+    "deno.json",
+    "commitlint.config.mjs",
+    "fnox.toml",
+    "mise.toml",
+    "rumdl.toml",
+    "rustfmt.toml",
+    ".yolobox"
+]
+
+[workspace.metadata.details]
+name = "unitopia"
+title = "Unitopia"
+readme = { generate = false }
 
 [workspace.dependencies]
 errgonomic = "0.5.0"
@@ -34,3 +60,4 @@ unused_import_braces = "deny"
 
 [workspace.lints.clippy]
 absolute_paths = "deny"
+arithmetic_side_effects = "deny"
