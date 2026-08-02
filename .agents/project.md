@@ -18,8 +18,8 @@ Requirements:
 * Must keep its members in `packages` dir
 * Must contain at least one member package that exports a [quantity value type](#quantity-value-type)
 * Every member must use macros to avoid boilerplate code when defining units and prefixes
-* Every member must define the macros in src/macros.rs
-* Every member must have the following crate-level attributes in src/lib.rs:
+* Every member must define the macros in `src/macros.rs`
+* Every member must have the following crate-level attributes in `src/lib.rs`:
   * `#![no_std]`
   * `#![forbid(unsafe_code)]`
 * Must use US English spelling
@@ -151,7 +151,7 @@ A [`unitopia`](#unitopia) member package that exports the following [marker stru
 
 Requirements:
 
-* Must define all types in src/lib.rs
+* Must define all types in `src/lib.rs`
 
 ## `unitopia-open-wrapper-arith-outputs`
 
@@ -164,7 +164,7 @@ A [`unitopia`](#unitopia) member package that exports the following [OWS](#open-
 Requirements:
 
 * Every arith output type must have a `pub inner: T` field (`T` is the storage type)
-* Must define all types in src/lib.rs
+* Must define all types in `src/lib.rs`
 
 ## `unitopia-strict-wrapper-prefixes`
 
@@ -191,6 +191,16 @@ A [`unitopia`](#unitopia) member [unit package](#unit-package) that exports phys
 ## `unitopia-measure-draft`
 
 A [`unitopia`](#unitopia) member package that exports a `Measure` type.
+
+## `unitopia-runtime-unit-quantity-value`
+
+A [`unitopia`](#unitopia) member [generic quantity value package](#generic-quantity-value-package) that exports [`QuantityValue`](#quantityvalue).
+
+Requirements:
+
+* Must define all types in `src/lib.rs`
+* Must have an optional `serde` feature:
+  * If enabled: `QuantityValue` must derive `Serialize` and `Deserialize`.
 
 ## `unitopia-measurement-draft`
 
@@ -498,7 +508,7 @@ A tuple of a value, a unit, a quantity.
 
 Examples:
 
-* Mass of a specific baby at a specific time on specific scales: 4.56 kg.
+* 74.55 kg is the mass of a person identified by passport number 98882348 issued by Russian Federation, recorded at 2024-08-02T09:26:13Z on scales identified by inventory number 1238343.
 
 Note:
 
@@ -582,7 +592,7 @@ A [unit](#unit) that is not a part of SI.
 Examples:
 
 * Galactosidase Activity Unit (GaIU) defined as "the amount of α-galactosidase that releases 1 micromole (1 µmol) of p-nitrophenol per minute from a synthetic substrate (commonly p-nitrophenyl-α-D-galactopyranoside), under specified assay conditions (temperature and pH)".
-* Power of hydrogen (pH) defined as "−log10(a_H+), where a_H+ is the activity of hydrogen(1+) ions in solution"
+* Power of hydrogen (pH) defined as "−log10 (a_H+), where a_H+ is the activity of hydrogen (1+) ions in solution"
 
 ## Prefix
 
@@ -980,8 +990,46 @@ Requirements:
   * Must set the quantity in the `Output` to `Summ<Q>` where `Q` is the input quantity
 * Must implement [subtraction traits](#subtraction-trait) for values of the same quantity and unit
   * Must set the quantity in the `Output` to `Diff<Q>` where `Q` is the input quantity
-* TODO(?): Must implement the `Quantity` trait from `unitopia_helpers`
+* TODO (?): Must implement the `Quantity` trait from `unitopia_helpers`
   * (we need to express a requirement that a quantity value type must have a value, a unit, a storage)
+
+## `QuantityValue`
+
+A runtime-unit [quantity value type](#quantity-value-type) exported by [`unitopia-runtime-unit-quantity-value`](#unitopia-runtime-unit-quantity-value).
+
+```rust
+pub struct QuantityValue<Value, Unit> {
+    pub value: Value,
+    pub unit: Unit,
+}
+```
+
+Requirements:
+
+* Must have a constructor that accepts both fields.
+* Its arithmetic requirements override the infallible addition and subtraction requirements of [quantity value type](#quantity-value-type).
+* Must have a `Display` impl generic over `<Value: Display, Unit: Display>`:
+  * Must write `"{value} {unit}"`.
+* Must have methods:
+  * `try_add`
+    * Must perform fallible addition with another `QuantityValue` of the same Rust type.
+  * `try_sub`
+    * Must perform fallible subtraction with another `QuantityValue` of the same Rust type.
+* `try_add` and `try_sub`:
+  * Must compare the runtime units before operating on the values.
+  * Must return `Err` containing both operands if the runtime units differ.
+  * Must use checked value arithmetic.
+  * Must return `Err` containing both operands if the value arithmetic fails.
+  * Must not mutate either operand before every fallible validation and arithmetic operation succeeds.
+* Must not implement `Add`, `AddAssign`, `Sub`, or `SubAssign` between two `QuantityValue` values.
+  * Rationale: values with different runtime units have the same Rust type, while these traits cannot report a unit mismatch without making their output unexpectedly fallible.
+* Scalar operations that preserve the unit may be infallible only when the corresponding operation on `Value` is infallible.
+
+Notes:
+
+* The spec for this type has been written by an LLM.
+* `QuantityValue<Decimal, Currency>` can represent money whose currency is selected at runtime.
+* This type contains no [quantity](#quantity) identity, so it is not a [measure](#measure).
 
 ## Quantity-generic quantity value type
 
