@@ -1625,6 +1625,17 @@ name = "unitopia-open-wrapper-arith-outputs"
 version = "0.1.0"
 
 [[package]]
+name = "unitopia-runtime-unit-quantity-value"
+version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "errgonomic",
+ "num-traits",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "unitopia-strict-wrapper-prefixes"
 version = "0.1.0"
 dependencies = [

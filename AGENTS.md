@@ -2937,6 +2937,7 @@ members = [
     "packages/unitopia-marker-units",
     "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
+    "packages/unitopia-runtime-unit-quantity-value",
     "packages/unitopia-strict-wrapper-prefixes",
     "packages/unitopia-strict-wrapper-units",
     "packages/unitopia-test-helpers"
@@ -3235,6 +3236,37 @@ path = "src/lib.rs"
 
 [lints]
 workspace = true
+```
+
+#### packages/unitopia-runtime-unit-quantity-value/Cargo.toml
+
+```toml
+[package]
+name = "unitopia-runtime-unit-quantity-value"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[package.metadata.details]
+title = "Runtime-unit quantity value"
+
+[lib]
+path = "src/lib.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+derive-new = "0.7.0"
+errgonomic = { workspace = true }
+num-traits = "0.2.19"
+serde = { version = "1.0.228", features = ["derive"], optional = true }
+thiserror = { workspace = true }
+
+[package.metadata.cargo-machete]
+ignored = ["serde"]
 ```
 
 #### packages/unitopia-strict-wrapper-prefixes/Cargo.toml
@@ -3608,6 +3640,43 @@ where
         Quot::from(Div::div(self.inner, rhs.inner))
     }
 }
+```
+
+#### packages/unitopia-runtime-unit-quantity-value/src/lib.rs
+
+```rust
+//! Quantity values whose units are selected at runtime.
+
+#![no_std]
+#![forbid(unsafe_code)]
+#![deny(clippy::arithmetic_side_effects)]
+#![cfg_attr(not(test), deny(unused_crate_dependencies))]
+
+use core::fmt::{self, Display, Formatter};
+use derive_new::new;
+
+#[macro_use]
+mod macros;
+
+/// A numeric value paired with its runtime unit.
+#[derive(new, Eq, PartialEq, Ord, PartialOrd, Hash, Clone, Copy, Debug, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct QuantityValue<Value, Unit> {
+    /// The numeric value.
+    pub value: Value,
+    /// The runtime unit in which `value` is expressed.
+    pub unit: Unit,
+}
+
+impl<Value: Display, Unit: Display> Display for QuantityValue<Value, Unit> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{} {}", self.value, self.unit)
+    }
+}
+
+define_try_quantity_value_arithmetic!(try_add, CheckedAdd, checked_add, QuantityValueTryAddError, "cannot add quantity values with different units", "quantity value addition failed",);
+
+define_try_quantity_value_arithmetic!(try_sub, CheckedSub, checked_sub, QuantityValueTrySubError, "cannot subtract quantity values with different units", "quantity value subtraction failed",);
 ```
 
 #### packages/unitopia-strict-wrapper-prefixes/src/lib.rs

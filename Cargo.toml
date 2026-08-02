@@ -11,6 +11,7 @@ members = [
     "packages/unitopia-marker-units",
     "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
+    "packages/unitopia-runtime-unit-quantity-value",
     "packages/unitopia-strict-wrapper-prefixes",
     "packages/unitopia-strict-wrapper-units",
     "packages/unitopia-test-helpers"
