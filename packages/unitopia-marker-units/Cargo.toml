@@ -16,5 +16,5 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-unitopia-helpers = { path = "../unitopia-helpers" }
-unitopia-marker-arith-outputs = { path = "../unitopia-marker-arith-outputs" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
+unitopia-marker-arith-outputs = { version = "0.1.0", path = "../unitopia-marker-arith-outputs" }

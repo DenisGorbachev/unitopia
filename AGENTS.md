@@ -62,7 +62,13 @@ Notes:
 * Don't edit the files in the following top-level dirs: `specs`, `.agents`
 * If a later instruction overrides the former instruction: follow the later instruction (last override wins)
 * If I explicitly ask to update the code in a way that deviates from the spec, update both the code and the spec
-* If you need to patch a dependency, tell me about it, but don't do it without my explicit permission
+* If you need to patch a dependency:
+  * If the dependency is owned by Denis Gorbachev:
+    * Then:
+      * Find it in `~/workspace`
+      * Apply edits
+      * Add a local override via `[patch]` in `.cargo/config.local.toml`
+    * Else: tell me about it, but don't patch it without my explicit permission
 * If you notice unexpected edits, keep them and don't mention them
 * If you notice incorrect code, tell me
 * If you have to apply a workaround, add a comment next to the workaround that explains why it is necessary, and also mention the workaround in your final report
@@ -82,7 +88,8 @@ Notes:
 #### Review workflow
 
 * Output a full list of findings (not a shortlist)
-* Every finding in the full list must be formatted as `{number}. [{priority}] {title}. {body} ({references}). Proposed fixes: {fixes}` (I will identify the findings by number in my answer)
+* Every finding in the full list must be formatted as `{ctid}: [{priority}] {title}. {body} ({references}). Proposed fixes: {fixes}` (I will identify the findings by chat thread ID in my answer)
+  * `ctid` must be a [chat thread id](#chat-thread-id)
   * `priority` must be one of `P0`, `P1`, `P2`, `P3`.
   * `references` must be a comma-separated list of `reference`
   * `reference` must must be formatted as `{path}:{line}`
@@ -110,6 +117,7 @@ Notes:
 #### Messages from agent to user
 
 * Use `~` in paths
+* Give each independently addressable item in a multi-item message a unique [chat thread ID](#chat-thread-id)
 
 #### Commands
 
@@ -469,6 +477,14 @@ A function marked with `#[test]` or `#[tokio::test]`.
 #### Code style
 
 * Don't enforce a line length limit when writing code, comments or documentation
+
+#### Chat thread id
+
+An identifier which could be used to refer to the chat thread in the subsequent messages.
+
+* Must have the following format: `{prefix}-{index}`
+  * `prefix` must be a string of at least three uppercase letters (e.g. `RVC`, `AKE`, `LMY`) (letters should match thread topic)
+  * `index` must be a natural number (e.g. `0`, `1`, `15`)
 
 ### Project concepts
 
@@ -3079,8 +3095,8 @@ derive-new = "0.7.0"
 num-traits = "0.2.19"
 rkyv = { version = "0.8.14", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
-unitopia-marker-arith-outputs = { path = "../unitopia-marker-arith-outputs" }
-unitopia-helpers = { path = "../unitopia-helpers" }
+unitopia-marker-arith-outputs = { version = "0.1.0", path = "../unitopia-marker-arith-outputs" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
 ```
 
 #### packages/unitopia-draft-scale/Cargo.toml
@@ -3171,7 +3187,7 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-unitopia-helpers = { path = "../unitopia-helpers" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
 ```
 
 #### packages/unitopia-marker-units/Cargo.toml
@@ -3195,8 +3211,8 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-unitopia-helpers = { path = "../unitopia-helpers" }
-unitopia-marker-arith-outputs = { path = "../unitopia-marker-arith-outputs" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
+unitopia-marker-arith-outputs = { version = "0.1.0", path = "../unitopia-marker-arith-outputs" }
 ```
 
 #### packages/unitopia-numeric-strict-wrapper-prefixes/Cargo.toml
@@ -3294,9 +3310,9 @@ bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 num-traits = "0.2.19"
 rkyv = { version = "0.8.14", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
-unitopia-helpers = { path = "../unitopia-helpers" }
-unitopia-strict-wrapper-units = { path = "../unitopia-strict-wrapper-units" }
-unitopia-open-wrapper-arith-outputs = { path = "../unitopia-open-wrapper-arith-outputs" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
+unitopia-strict-wrapper-units = { version = "0.1.0", path = "../unitopia-strict-wrapper-units" }
+unitopia-open-wrapper-arith-outputs = { version = "0.1.0", path = "../unitopia-open-wrapper-arith-outputs" }
 wincode = { version = "0.3.1", features = ["derive"], optional = true }
 
 [features]
@@ -3330,8 +3346,8 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-unitopia-helpers = { path = "../unitopia-helpers" }
-unitopia-open-wrapper-arith-outputs = { path = "../unitopia-open-wrapper-arith-outputs" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
+unitopia-open-wrapper-arith-outputs = { version = "0.1.0", path = "../unitopia-open-wrapper-arith-outputs" }
 num-traits = "0.2.19"
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 rkyv = { version = "0.8.14", optional = true }

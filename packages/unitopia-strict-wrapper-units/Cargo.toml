@@ -16,8 +16,8 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-unitopia-helpers = { path = "../unitopia-helpers" }
-unitopia-open-wrapper-arith-outputs = { path = "../unitopia-open-wrapper-arith-outputs" }
+unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
+unitopia-open-wrapper-arith-outputs = { version = "0.1.0", path = "../unitopia-open-wrapper-arith-outputs" }
 num-traits = "0.2.19"
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 rkyv = { version = "0.8.14", optional = true }
