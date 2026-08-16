@@ -18,7 +18,7 @@ workspace = true
 [dependencies]
 bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 num-traits = "0.2.19"
-rkyv = { version = "0.8.14", optional = true }
+rkyv = { version = "0.8.16", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
 unitopia-strict-wrapper-units = { version = "0.1.0", path = "../unitopia-strict-wrapper-units" }

@@ -19,7 +19,7 @@ workspace = true
 bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 derive-new = "0.7.0"
 num-traits = "0.2.19"
-rkyv = { version = "0.8.14", optional = true }
+rkyv = { version = "0.8.16", optional = true }
 serde = { version = "1.0.228", features = ["derive"], optional = true }
 unitopia-marker-arith-outputs = { version = "0.1.0", path = "../unitopia-marker-arith-outputs" }
 unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
