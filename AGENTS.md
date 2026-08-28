@@ -3899,7 +3899,7 @@ where
 #### packages/unitopia-poly-unit/src/lib.rs
 
 ```rust
-//! Unit strings classified by recognized representation.
+//! Polymorphic unit strings classified by recognized representation.
 
 #![no_std]
 #![forbid(unsafe_code)]
