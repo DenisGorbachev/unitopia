@@ -498,6 +498,25 @@ Notes:
 
 - Should match the thread topic
 
+#### findings.md
+
+- If it exists:
+  - Must contain a non-empty list of [findings](#finding)
+
+#### Finding
+
+- Must be formatted as `### {ctid}\n\n[{priority}] {title}. {body} ({references}). Proposed fixes: {fixes}`
+  - `ctid` must be a [chat thread id](#chat-thread-id)
+  - `priority` must be one of `P0`, `P1`, `P2`, `P3`.
+  - `references` must be a comma-separated list of `reference`
+  - `reference` must must be formatted as `{path}:{line}`
+  - `path` must be a file path relative to your working directory
+  - `line` must be the first line of the relevant code or text block
+  - `fixes` must be one of the following:
+    - If there is at least one proposed fix:
+      - Then: "\n\n" and a Markdown nested list of fixes where each fix must have a format `{number}. {description}` (the numbers should start from 1 for each list of fixes)
+      - Else: the exact text "none."
+
 ### Project concepts
 
 #### This document
@@ -2949,6 +2968,187 @@ cfg_if::cfg_if! {
 
 ### Project files
 
+#### mise.toml
+
+```toml
+min_version = "2026.7.13"
+
+[settings]
+idiomatic_version_file_enable_tools = ["rust"]
+task.output = "keep-order"
+
+[tools]
+node = "24.15.0"
+deno = "1.46.1"
+fnox = "1.33.1"
+cargo-binstall = "1.10.15"
+"npm:@commitlint/config-conventional" = "19.6.0"
+"npm:@commitlint/cli" = "19.6.0"
+"npm:@commitlint/types" = "19.5.0"
+"cargo:cargo-insert-docs" = "1.6.0"
+"cargo:cargo-hack" = "0.6.33"
+"cargo:cargo-nextest" = "0.9.102"
+"cargo:cargo-expand" = "1.0.114"
+"cargo:taplo-cli" = "0.10.0"
+"cargo:rumdl" = "0.1.0"
+"cargo:sd" = "1.0.0"
+
+[hooks]
+postinstall = { task = "git:install-hooks" }
+
+[tasks."build"]
+run = "cargo build --workspace"
+
+[tasks."check"]
+depends = ["cargo:validate-config"]
+run = [{ tasks = ["lint", "test"] }]
+
+[tasks."test"]
+depends = ["test:code", "test:docs"]
+
+[tasks."lint"]
+depends = ["lint:name", "lint:configs", "lint:code", "lint:code:style", "lint:docs", "lint:reports"]
+
+[tasks."lint:name"]
+run = [{ task = "fix:name", args = ["--check"] }]
+
+[tasks."lint:configs"]
+depends = ["lint:configs:cargo", "lint:configs:fnox"]
+
+[tasks."lint:configs:cargo"]
+run = [{ task = "fix:cargo", args = ["--check"] }]
+
+[tasks."lint:configs:fnox"]
+run = [{ task = "fix:fnox" }]
+
+[tasks."lint:code"]
+run = "cargo clippy --locked --workspace --all-targets --all-features -- -D warnings"
+
+[tasks."lint:code:style"]
+run = "cargo fmt --all -- --check"
+
+[tasks."lint:docs"]
+run = "rumdl check"
+
+[tasks."test:code"]
+run = "fnox --profile test exec --replace -- cargo nextest run --locked --workspace --all-features --no-tests warn"
+
+[tasks."test:code:integration"]
+# see also: "agent:test:code:integration"
+# `--test-threads 1` because integration tests must be run sequentially
+run = [{ task = "test:code", args = ["--ignore-default-filter", "--max-fail", "1", "--test-threads", "1", "integration_tests::"] }]
+
+[tasks."test:code:slow"]
+# see also: "agent:test:code:slow"
+# `--test-threads` is omitted because slow tests may be run in parallel
+run = [{ task = "test:code", args = ["--ignore-default-filter", "--max-fail", "1", "slow_tests::"] }]
+
+[tasks."test:docs"]
+env = { RUSTDOCFLAGS = "-D warnings" }
+run = "cargo test --locked --workspace --doc --all-features --no-fail-fast --quiet"
+
+[tasks."pre-commit"]
+alias = "pre-merge-commit"
+run = [{ task = "git:validate-commit" }]
+
+# Compatibility for existing clones whose generated post-commit hook still invokes this task. The installer removes that hook during this one-time migration.
+[tasks."post-commit"]
+hide = true
+run = [{ task = "git:install-hooks" }]
+
+[tasks."commit-msg"]
+run = 'mise run --output interleave commitlint -- --edit "$@"'
+
+[tasks."fix"]
+depends = ["fix:code", "fix:aux"]
+
+[tasks."fix:aux"]
+depends = ["fix:configs", "fix:docs", "fix:agents", "fix:readme"]
+
+[tasks."fix:configs"]
+depends = ["fix:cargo", "fix:fnox"]
+
+[tasks."fix:code"]
+depends = ["fix:name", "fix:code:style"]
+
+[tasks."fix:code:warnings"]
+depends = ["fix:cargo"]
+# second pass is needed because "cargo clippy --fix" exits with 0 even if some warnings remain
+env = { __CARGO_FIX_YOLO = 'yeah' }
+run = [
+    "cargo clippy --workspace --all-targets --all-features --fix --allow-dirty --allow-staged",
+    { task = "lint:code" },
+]
+
+[tasks."fix:code:style"]
+# Run after `fix:code:warnings` because both tasks modify the same code files.
+depends = ["fix:code:warnings"]
+run = "cargo fmt --all"
+
+[tasks."fix:docs"]
+depends = ["fix:agents", "fix:readme"]
+# use `rumdl check --fix` instead of `rumdl fmt` because `rumdl check --fix` exits with 1 if errors remain (since v0.1.0)
+run = "rumdl check --fix"
+
+[tasks."fix:agents"]
+# "fix:agents" depends on "fix:code" because it reads the code files
+depends = ["fix:name", "fix:configs", "fix:code"]
+run = [{ task = "gen:agents" }]
+
+[tasks."gen:readme"]
+run = "./README.ts"
+
+[tasks."gen:agents"]
+run = "./AGENTS.ts"
+
+[tasks."commitlint"]
+run = "commitlint --extends \"$(mise where npm:@commitlint/config-conventional)/node_modules/@commitlint/config-conventional/lib/index.js\""
+
+[tasks."agent:docs:list"]
+run = "[ -d .agents/docs ] && find .agents/docs -type f -print || true"
+output = "interleave"
+quiet = true
+
+[tasks."agent:on:stop"]
+depends = ["cargo:validate-config"]
+run = [{ task = "fix" }, { task = "agent:test" }]
+
+[tasks."agent:test"]
+depends = ["agent:test:code", "agent:test:code:integration", "agent:test:code:slow", "test:docs"]
+
+[tasks."agent:test:code"]
+# don't include `--fail-fast` because it's better to let the agent see all failures
+# reduce output to save tokens
+run = [{ task = "test:code", args = ["--cargo-quiet", "--hide-progress-bar", "--status-level", "fail", "--final-status-level", "flaky"] }]
+
+[tasks."agent:test:code:integration"]
+# see also: "test:code:integration"
+# `--test-threads 1` because integration tests must be run sequentially
+run = [{ task = "test:code", args = ["--cargo-quiet", "--hide-progress-bar", "--status-level", "fail", "--final-status-level", "flaky", "--ignore-default-filter", "--max-fail", "1", "--test-threads", "1", "integration_tests::"] }]
+
+[tasks."agent:test:code:slow"]
+# see also: "test:code:slow"
+# `--test-threads` is omitted because slow tests may be run in parallel
+run = [{ task = "test:code", args = ["--cargo-quiet", "--hide-progress-bar", "--status-level", "fail", "--final-status-level", "flaky", "--ignore-default-filter", "--max-fail", "1", "slow_tests::"] }]
+```
+
+#### fnox.toml
+
+```toml
+#:schema https://fnox.jdx.dev/schema.json
+
+if_missing = "error"
+env = "exec"
+
+[providers]
+keychain = { type = "keychain", service = "unitopia" }
+pass = { type = "password-store", prefix = "unitopia/" }
+age = { type = "age", recipients = [
+    "age1sf4r4amev2svqr6llwg8hgtz9n7p5qdh7hh0mavcshzfrmgfduksnq3hql",
+    "age1605gsnxpe536sprwccyumq74veg0g80u55n8ggems0t8deau6qdsfnq3m3"
+] }
+```
+
 #### Cargo.toml
 
 ```toml
@@ -2965,6 +3165,7 @@ members = [
     "packages/unitopia-marker-units",
     "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
+    "packages/unitopia-poly-unit",
     "packages/unitopia-runtime-unit-quantity-value",
     "packages/unitopia-strict-wrapper-prefixes",
     "packages/unitopia-strict-wrapper-units",
@@ -2985,6 +3186,7 @@ exclude = [
     "doc/dev",
     "specs",
     "AGENTS.ts",
+    "CargoMetadata.ts",
     "README.ts",
     "AGENTS*.md",
     "CLAUDE*.md",
@@ -3005,6 +3207,7 @@ readme = { generate = false }
 
 [workspace.dependencies]
 errgonomic = "0.5.0"
+serde = { version = "1.0.228", features = ["derive"] }
 thiserror = "2.0.18"
 
 [workspace.lints.rust]
@@ -3041,10 +3244,7 @@ workspace = true
 [dependencies]
 derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
-serde = { version = "1.0.228", features = ["derive"], optional = true }
-
-[features]
-serde = ["dep:serde"]
+serde = { workspace = true, optional = true }
 
 [package.metadata.cargo-machete]
 ignored = ["serde"]
@@ -3072,10 +3272,7 @@ workspace = true
 
 [dependencies]
 derive_more = { version = "2.1.1", features = ["full"] }
-serde = { version = "1.0.228", features = ["derive"], optional = true }
-
-[features]
-serde = ["dep:serde"]
+serde = { workspace = true, optional = true }
 
 [package.metadata.cargo-machete]
 ignored = ["serde"]
@@ -3106,7 +3303,7 @@ bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 derive-new = "0.7.0"
 num-traits = "0.2.19"
 rkyv = { version = "0.8.14", optional = true }
-serde = { version = "1.0.228", features = ["derive"], optional = true }
+serde = { workspace = true, optional = true }
 unitopia-marker-arith-outputs = { version = "0.1.0", path = "../unitopia-marker-arith-outputs" }
 unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
 ```
@@ -3266,6 +3463,38 @@ path = "src/lib.rs"
 workspace = true
 ```
 
+#### packages/unitopia-poly-unit/Cargo.toml
+
+```toml
+[package]
+name = "unitopia-poly-unit"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[package.metadata.details]
+title = "Polymorphic units"
+
+[lib]
+path = "src/lib.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+errgonomic = { workspace = true }
+serde = { workspace = true, optional = true }
+smart-default = "0.7.1"
+subtype = { git = "https://github.com/DenisGorbachev/subtype", version = "0.1.0", features = ["macros"], optional = true }
+thiserror = { workspace = true }
+ucum-units = "0.1.0"
+
+[features]
+serde = ["dep:serde", "dep:subtype"]
+```
+
 #### packages/unitopia-runtime-unit-quantity-value/Cargo.toml
 
 ```toml
@@ -3291,7 +3520,7 @@ derive-new = "0.7.0"
 errgonomic = { workspace = true }
 num-traits = "0.2.19"
 schemars = { version = "1.2.1", optional = true }
-serde = { version = "1.0.228", features = ["derive"], optional = true }
+serde = { workspace = true, optional = true }
 thiserror = { workspace = true }
 
 [package.metadata.cargo-machete]
@@ -3322,14 +3551,13 @@ workspace = true
 bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 num-traits = "0.2.19"
 rkyv = { version = "0.8.14", optional = true }
-serde = { version = "1.0.228", features = ["derive"], optional = true }
+serde = { workspace = true, optional = true }
 unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
 unitopia-strict-wrapper-units = { version = "0.1.0", path = "../unitopia-strict-wrapper-units" }
 unitopia-open-wrapper-arith-outputs = { version = "0.1.0", path = "../unitopia-open-wrapper-arith-outputs" }
 wincode = { version = "0.3.1", features = ["derive"], optional = true }
 
 [features]
-serde = ["dep:serde"]
 rkyv = ["dep:rkyv"]
 bitcode = ["dep:bitcode"]
 wincode = ["dep:wincode"]
@@ -3362,7 +3590,7 @@ workspace = true
 unitopia-helpers = { version = "0.1.0", path = "../unitopia-helpers" }
 unitopia-open-wrapper-arith-outputs = { version = "0.1.0", path = "../unitopia-open-wrapper-arith-outputs" }
 num-traits = "0.2.19"
-serde = { version = "1.0.228", features = ["derive"], optional = true }
+serde = { workspace = true, optional = true }
 rkyv = { version = "0.8.14", optional = true }
 bitcode = { version = "0.6.9", features = ["derive"], optional = true }
 
@@ -3395,18 +3623,6 @@ strum = { version = "0.27", features = ["derive"] }
 rust_decimal = "1.40"
 derive_more = { version = "2.1.1", features = ["from"] }
 ruint = "1.17.2"
-```
-
-#### fnox.toml
-
-```toml
-#:schema https://fnox.jdx.dev/schema.json
-
-if_missing = "error"
-
-[providers]
-keychain = { type = "keychain", service = "unitopia" }
-pass = { type = "password-store", prefix = "unitopia/" }
 ```
 
 #### packages/unitopia-draft-measure-v2/src/lib.rs
@@ -3669,6 +3885,22 @@ where
         Quot::from(Div::div(self.inner, rhs.inner))
     }
 }
+```
+
+#### packages/unitopia-poly-unit/src/lib.rs
+
+```rust
+//! Unit strings classified by recognized representation.
+
+#![no_std]
+#![forbid(unsafe_code)]
+#![deny(clippy::arithmetic_side_effects)]
+#![cfg_attr(not(test), deny(unused_crate_dependencies))]
+
+extern crate alloc;
+
+mod types;
+pub use types::*;
 ```
 
 #### packages/unitopia-runtime-unit-quantity-value/src/lib.rs

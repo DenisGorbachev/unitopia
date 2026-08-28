@@ -11,6 +11,7 @@ members = [
     "packages/unitopia-marker-units",
     "packages/unitopia-numeric-strict-wrapper-prefixes",
     "packages/unitopia-open-wrapper-arith-outputs",
+    "packages/unitopia-poly-unit",
     "packages/unitopia-runtime-unit-quantity-value",
     "packages/unitopia-strict-wrapper-prefixes",
     "packages/unitopia-strict-wrapper-units",
@@ -52,6 +53,7 @@ readme = { generate = false }
 
 [workspace.dependencies]
 errgonomic = "0.5.0"
+serde = { version = "1.0.228", features = ["derive"] }
 thiserror = "2.0.18"
 
 [workspace.lints.rust]

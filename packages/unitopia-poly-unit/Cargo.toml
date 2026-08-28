@@ -1,13 +1,13 @@
 [package]
-name = "unitopia-runtime-unit-quantity-value"
-version = "0.1.0"
+name = "unitopia-poly-unit"
+version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
-title = "Runtime-unit quantity value"
+title = "Polymorphic units"
 
 [lib]
 path = "src/lib.rs"
@@ -16,12 +16,12 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-derive-new = "0.7.0"
 errgonomic = { workspace = true }
-num-traits = "0.2.19"
-schemars = { version = "1.2.1", optional = true }
 serde = { workspace = true, optional = true }
+smart-default = "0.7.1"
+subtype = { git = "https://github.com/DenisGorbachev/subtype", version = "0.1.0", features = ["macros"], optional = true }
 thiserror = { workspace = true }
+ucum-units = "0.1.0"
 
-[package.metadata.cargo-machete]
-ignored = ["schemars", "serde"]
+[features]
+serde = ["dep:serde", "dep:subtype"]
