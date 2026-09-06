@@ -52,7 +52,7 @@ title = "Unitopia"
 readme = { generate = false }
 
 [workspace.dependencies]
-errgonomic = "0.5.0"
+errgonomic = "0.5.3"
 serde = { version = "1.0.228", features = ["derive"] }
 thiserror = "2.0.18"
 
