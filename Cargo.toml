@@ -42,6 +42,7 @@ exclude = [
     "fnox.toml",
     "mise.toml",
     "rumdl.toml",
+    "shuck.toml",
     "rustfmt.toml",
     ".yolobox"
 ]
