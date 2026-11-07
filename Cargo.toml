@@ -22,7 +22,6 @@ members = [
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.93.1"
-homepage = "https://github.com/DenisGorbachev/unitopia"
 repository = "https://github.com/DenisGorbachev/unitopia"
 keywords = []
 categories = []

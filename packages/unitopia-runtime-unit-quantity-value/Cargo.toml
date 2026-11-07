@@ -3,7 +3,6 @@ name = "unitopia-runtime-unit-quantity-value"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]

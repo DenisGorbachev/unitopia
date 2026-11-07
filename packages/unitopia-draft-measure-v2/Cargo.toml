@@ -3,7 +3,6 @@ name = "unitopia-draft-measure-v2"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]

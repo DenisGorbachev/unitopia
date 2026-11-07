@@ -2624,7 +2624,6 @@ members = [
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.93.1"
-homepage = "https://github.com/DenisGorbachev/unitopia"
 repository = "https://github.com/DenisGorbachev/unitopia"
 keywords = []
 categories = []
@@ -2682,7 +2681,6 @@ name = "unitopia-draft-measure-v2"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2711,7 +2709,6 @@ name = "unitopia-draft-measure-v3"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2739,7 +2736,6 @@ name = "unitopia-draft-measure"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2769,7 +2765,6 @@ name = "unitopia-draft-scale"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2790,7 +2785,6 @@ name = "unitopia-helpers"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2815,7 +2809,6 @@ name = "unitopia-marker-arith-outputs"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2836,7 +2829,6 @@ name = "unitopia-marker-prefixes"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2860,7 +2852,6 @@ name = "unitopia-marker-units"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2885,7 +2876,6 @@ name = "unitopia-numeric-strict-wrapper-prefixes"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2903,7 +2893,6 @@ name = "unitopia-open-wrapper-arith-outputs"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2924,7 +2913,6 @@ name = "unitopia-poly-unit"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2956,7 +2944,6 @@ name = "unitopia-runtime-unit-quantity-value"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -2988,7 +2975,6 @@ name = "unitopia-strict-wrapper-prefixes"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -3027,7 +3013,6 @@ name = "unitopia-strict-wrapper-units"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
@@ -3059,7 +3044,6 @@ name = "unitopia-test-helpers"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
-homepage.workspace = true
 repository.workspace = true
 
 [package.metadata.details]
