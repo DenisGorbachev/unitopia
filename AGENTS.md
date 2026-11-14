@@ -2624,32 +2624,6 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.93.1"
 repository = "https://github.com/DenisGorbachev/unitopia"
-keywords = []
-categories = []
-exclude = [
-    ".*",
-    "*.local.*",
-    "doc/dev",
-    "specs",
-    "AGENTS.ts",
-    "CargoMetadata.ts",
-    "README.ts",
-    "AGENTS*.md",
-    "deno.lock",
-    "deno.json",
-    "clippy.toml",
-    "commitlint.config.mjs",
-    "fnox.toml",
-    "mise.toml",
-    "nu-lint.toml",
-    "nufmt.nuon",
-    "rumdl.toml",
-    "shuck.toml",
-    "rustfmt.toml",
-    "rust-toolchain.toml",
-    "skills-lock.json",
-    ".yolobox"
-]
 
 [workspace.metadata.details]
 name = "unitopia"
