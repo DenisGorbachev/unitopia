@@ -3,7 +3,6 @@
 #![no_std]
 #![forbid(unsafe_code)]
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 use core::cmp::Ordering;
 use core::fmt::{self, Display, Formatter};

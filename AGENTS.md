@@ -2661,6 +2661,9 @@ errgonomic = "0.6.0"
 serde = { version = "1.0.228", features = ["derive"] }
 thiserror = "2.0.18"
 
+[workspace.lints.cargo]
+unused_dependencies = "deny"
+
 [workspace.lints.rust]
 redundant_imports = "deny"
 unused_import_braces = "deny"
@@ -3067,7 +3070,6 @@ ruint = "1.17.2"
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 mod measure_v2;
 pub use measure_v2::*;
@@ -3077,7 +3079,6 @@ pub use measure_v2::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 mod measure_v3;
 pub use measure_v3::*;
@@ -3090,7 +3091,6 @@ pub use measure_v3::*;
 
 #![forbid(unsafe_code)]
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 #[macro_export]
 macro_rules! def_quantity {
@@ -3119,7 +3119,6 @@ pub use scales::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 mod upscale;
 pub use upscale::*;
@@ -3130,7 +3129,6 @@ pub use upscale::*;
 ```rust
 #![no_std]
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 mod macros;
 mod scalar;
@@ -3178,7 +3176,6 @@ pub use functions::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 use core::marker::PhantomData;
 
@@ -3198,7 +3195,6 @@ define_marker_arith_output!(Powr<A, N>);
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 #[macro_use]
 mod macros;
@@ -3210,7 +3206,6 @@ pub use prefixes::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 #[macro_use]
 mod macros;
@@ -3222,14 +3217,12 @@ pub use units::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 ```
 
 ### packages/unitopia-open-wrapper-arith-outputs/src/lib.rs
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 use core::marker::PhantomData;
 use core::ops::Div;
@@ -3333,7 +3326,6 @@ where
 #![no_std]
 #![forbid(unsafe_code)]
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 extern crate alloc;
 
@@ -3349,7 +3341,6 @@ pub use types::*;
 #![no_std]
 #![forbid(unsafe_code)]
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 use core::cmp::Ordering;
 use core::fmt::{self, Display, Formatter};
@@ -3396,7 +3387,6 @@ define_try_quantity_value_arithmetic!(try_sub, CheckedSub, checked_sub, Quantity
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 #[macro_use]
 mod macros;
@@ -3410,7 +3400,6 @@ pub use prefixes::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 /// This trait is required to distinguish between units and scalars.
 /// [`Mul`](core::ops::Mul) impl whose rhs is a unit must have a `type Output` whose outer type is `Prod`.
@@ -3435,7 +3424,6 @@ pub use units::*;
 
 ```rust
 #![deny(clippy::arithmetic_side_effects)]
-#![cfg_attr(not(test), deny(unused_crate_dependencies))]
 
 extern crate core;
 
